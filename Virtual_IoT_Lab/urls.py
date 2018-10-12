@@ -21,5 +21,8 @@ urlpatterns = [
     path('thing/', dash_views.thing,name="thing"),
     path('create/', dash_views.create,name="create"),
     path('drag/', dash_views.drag,name="drag"),
-    
+    path('policy/',dash_views.policyfn,name="policy"),
+    path('type/',dash_views.thingfn,name='thing'),
+    path('certi/',dash_views.certifn,name='certi'),
+    path('home/', dash_views.home, name='home'),
 ]

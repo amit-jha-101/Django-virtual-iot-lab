@@ -3,9 +3,20 @@
 <div class="container-fluid">
         <div class="row">
                 <div class="col-md-8">
-<h2>Thing has been created</h2>
+<h2>Thing has been created Successfully</h2>
 <h5>name : {{name.thingName}}</h5>
 <h5>Type: {{ name.thingtype }}</h5>
+<h1>LIST OF THINGS</h1>
+{% for i in list.things %}
+<p>
+<b>Name:</b> {{ i.thingName }}<br>
+<b>Type:</b> {{i.thingTypeName}}<br>
+<b>Attributes:</b> {{i.attributes}}<br>
+<b>Version:</b> {{i.version}}
+</p>
+
+{% endfor %}
+
 </div>
 </div>
 </div>
