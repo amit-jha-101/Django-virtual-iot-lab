@@ -1,6 +1,14 @@
 from django.shortcuts import render,redirect
 import boto3
 from .forms import ThingCreate,PolicyCreate,TypeCreate
+#import requests package for getting API responses
+import requests
+# import time module for getting the required pause in *seconds*
+import time
+# import datetime module for getting the timestamp
+from datetime import datetime
+import json
+
 # Create your views here.
 client = boto3.client('iot')
 def thing(request):
@@ -120,7 +128,22 @@ def certifn(request):
 def home(request):
     return render(request, 'dashboard/home.html')
 
+def temp(request):
+    url1 = 'http://api.openweathermap.org/data/2.5/weather?appid=f6182a9874fa6e1a215f5a7489f8b3eb&q=Mumbai'
+    count = 0
+    l =[]
+    while count < 5:
+        data = {}
+        json1 = requests.get(url1).json()
+        count=count+1
+        data['Mumbai']="{0:.2f}".format(float(json1['main']['temp'])-273.15)
+        data['timestamp'] = str(datetime.now())
+        data['count'] = count
+        payload = json.dumps(data)
+        print(payload)
+        l.append(payload)
 
+    return render(request,'dashboard/temp.html',{"data":l})
 
 
 

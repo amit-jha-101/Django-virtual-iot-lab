@@ -1,0 +1,31 @@
+{% extends 'dashboard/base.html' %}
+{% block content %}
+<div>
+  <table>
+    <tr>
+      <th>
+        Count
+      </th>
+      <th>
+        Temperature
+      </th>
+      <th>
+        timestamp
+      </th>
+    </th>
+    {% for data1 in data %} 
+      <tr>
+        <td>
+          {{data1}}
+        </td>
+        <td>
+          
+        </td>
+        <td>
+      
+        </td>
+      </tr>
+    {% endfor %}
+  </table>
+</div>
+{% endblock content %}

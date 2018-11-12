@@ -25,4 +25,5 @@ urlpatterns = [
     path('type/',dash_views.thingfn,name='thing'),
     path('certi/',dash_views.certifn,name='certi'),
     path('home/', dash_views.home, name='home'),
+    path('temp/',dash_views.temp,name='temp'),
 ]
