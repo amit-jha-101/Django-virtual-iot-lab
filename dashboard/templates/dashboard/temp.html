@@ -1,7 +1,7 @@
 {% extends 'dashboard/base.html' %}
 {% block content %}
 <div>
-  <table>
+  <table border="2">
     <tr>
       <th>
         Count
@@ -12,19 +12,22 @@
       <th>
         timestamp
       </th>
-    </th>
-    {% for data1 in data %} 
+    </tr>
+    {% for k in data %} 
       <tr>
         <td>
-          {{data1}}
+         {{ k.count}}
         </td>
+
         <td>
-          
+         {{ k.Mumbai}}
         </td>
+
         <td>
-      
+         {{ k.timestamp}}
         </td>
       </tr>
+
     {% endfor %}
   </table>
 </div>

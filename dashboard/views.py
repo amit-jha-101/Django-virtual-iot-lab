@@ -141,7 +141,7 @@ def temp(request):
         data['count'] = count
         payload = json.dumps(data)
         print(payload)
-        l.append(payload)
+        l.append(data)
 
     return render(request,'dashboard/temp.html',{"data":l})
 
