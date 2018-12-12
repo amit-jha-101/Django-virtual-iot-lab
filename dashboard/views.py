@@ -129,21 +129,7 @@ def home(request):
     return render(request, 'dashboard/home.html')
 
 def temp(request):
-    url1 = 'http://api.openweathermap.org/data/2.5/weather?appid=f6182a9874fa6e1a215f5a7489f8b3eb&q=Mumbai'
-    count = 0
-    l =[]
-    while count < 5:
-        data = {}
-        json1 = requests.get(url1).json()
-        count=count+1
-        data['Mumbai']="{0:.2f}".format(float(json1['main']['temp'])-273.15)
-        data['timestamp'] = str(datetime.now())
-        data['count'] = count
-        payload = json.dumps(data)
-        print(payload)
-        l.append(data)
-
-    return render(request,'dashboard/temp.html',{"data":l})
+    return render(request,'dashboard/temp.html')
 
 
 

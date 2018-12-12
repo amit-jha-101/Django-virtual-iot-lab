@@ -1,34 +1,147 @@
-{% extends 'dashboard/base.html' %}
-{% block content %}
-<div>
-  <table border="2">
-    <tr>
-      <th>
-        Count
-      </th>
-      <th>
-        Temperature
-      </th>
-      <th>
-        timestamp
-      </th>
-    </tr>
-    {% for k in data %} 
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <!-- Jinja 2 Templating Engine -->
+    <!-- bootstrap and custom stylesheets -->
+    <link rel="stylesheet" href="{% static 'dashboard/bootstrap.min.css' %}" >
+    <link rel="stylesheet" href="{% static 'dashboard/main.css' %}">
+    <link rel="stylesheet" href="{% static 'dashboard/jquery-ui.min.css' %}">
+    <link rel="stylesheet" href="{% static 'dashboard/style.css' %}">
+    <!-- custom javascript and jquery imports -->
+    <script src="{% static 'dashboard/jquery-3.3.1.min.js' %}"></script>
+    <script src="{% static 'dashboard/popper.min.js' %}"></script>
+    <script src="{% static 'dashboard/jquery-ui.js' %}"></script>
+    <script src="{% static 'dashboard/bootstrap.min.js' %}"></script>
+    <script src="{% static 'dashboard/get.js' %}"></script>
+    <script src="{% static 'dashboard/plotly-latest.min.js' %}"></script>
+
+    <title>Virtual IoT Lab </title>
+    
+</head>
+
+<body>
+
+    <header class="site-header">
+        <nav class="navbar navbar-expand-md navbar-dark bg-steel fixed-top" style="background-color: #8b4513 ">
+            <div class="container-fluid">
+                <a class="navbar-brand mr-4" href="#">Virtual IoT Lab</a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggle"
+                    aria-controls="navbarToggle" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarToggle">
+                    <div class="navbar-nav mr-auto">
+                        <a class="nav-item nav-link" href="{% url 'home'%}">Home</a>
+                        <a class="nav-item nav-link" href="#">About</a>
+                    </div>
+                    <!-- Navbar Right Side -->
+                    <div class="navbar-nav">
+                        <a class="nav-item nav-link" href="#">Login</a>
+                        <a class="nav-item nav-link" href="#">Register</a>
+                        
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+    <main role="main" class="container-fluid">
+     <div class="form-group">
+    <label for="city"> select City : </label>
+    <select class="form-control" id="sel_city">
+      <option value = "Mumbai" selected>Mumbai</option>
+      <option value = "Delhi">Delhi</option>
+      <option value = "Kolkata">Kolkata</option>
+      <option value = "Chennai">Chennai</option>
+      <option value = "Hyderabad">Hyderabad</option>
+    </select>
+  </div>
+  <div class="form-group">
+    <label for="interval"> select City : </label>
+    <select class="form-control" id="sel_interval">
+      <option value = "2" selected>2 min</option>
+      <option value = "5">5 min</option>
+      <option value = "8">8 min</option>
+      <option value = "10">10 min</option>
+      <option value = "15">15 min</option>
+    </select>
+  </div>
+             
+                 <div id="chart"></div>
+
+    <div style="height: 300px; overflow-y: scroll;">
+    <table class="table table-striped">
+    <thead>
       <tr>
-        <td>
-         {{ k.count}}
-        </td>
-
-        <td>
-         {{ k.Mumbai}}
-        </td>
-
-        <td>
-         {{ k.timestamp}}
-        </td>
+        <th>City</th>
+        <th>Temperature</th>
+        <th>timestamp</th>
       </tr>
+    </thead>
+    <tbody>
+    </tbody>
+    </table>             
+    </div>
+    <script>
+    var d = document.getElementById("sel_interval");
+    var interval = parseInt(d.options[d.selectedIndex].value) * 1000 * 60;
+        console.log(interval);
+         Plotly.plot('chart',[{
+            y:[getData()],
+            type:'line'
+        }]);
+        function getData(){
+            var e = document.getElementById("sel_city");
+            var city = e.options[e.selectedIndex].value;
+           var myData = null; 
+           console.log(city);          
+           console.log(interval);
+           uri = 'http://127.0.0.1:8000/api/'+city;
+           console.log(uri);
+           $.ajax({
+                    url: uri,
+                    dataType: "json",
+                    async: false,
+                    success: function(data)
+                    {
+                        myData = data;
+                    }
+                    
+                });
+            console.log(myData);
+            interval = parseInt(document.getElementById("sel_interval"));
+            tableData(myData);
+            return (myData['Temperature']);
+        }
+       
+          var cnt = 0;  
+        setInterval(function(){
+            Plotly.extendTraces('chart',{y:[[getData()]]},[0])
+            cnt++;
+            if(cnt>500){
+                Plotly.relayout('chart',{
+                    xaxis:{
+                        range:[cnt-500,cnt]
+                    }
+                })
+            }
 
-    {% endfor %}
-  </table>
-</div>
-{% endblock content %}
+        },interval);
+
+        function tableData(data){
+            var markup = "<tr><td>"+data['City']+"</td><td>"+data['Temperature']+"</td><td>"+
+            data['timestamp']+"</td></tr>";
+            $('table tbody').append(markup);
+        }
+    </script>
+           
+    </main>
+
+    
+</body>
+
+</html>
