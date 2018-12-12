@@ -33,6 +33,8 @@ class API:
         print('connected')
         myMQTTClient.publish("Temp_sensor/info", "connected", 0)
         payload = json.dumps(data)
+        print('payload::')
+        print(payload)
         myMQTTClient.publish("Temp_sensor/data", payload, 0)
 
 

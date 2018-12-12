@@ -1,0 +1,91 @@
+{% extends 'dashboard/base.html' %}
+{% block content %}
+  <div class="form-group" style="z-index:5">
+    <label for="city"> select City : </label>
+    <select class="form-control" id="sel_city">
+      <option value="Mumbai" >Mumbai</option>
+      <option value="Delhi" selected>Delhi</option>
+      <option value="Kolkata">Kolkata</option>
+      <option value="Chennai">Chennai</option>
+      <option value="Hyderabad">Hyderabad</option>
+    </select>
+    <br>
+    <label for="interval"> Select Duration : </label>
+    <select class="form-control" id="sel_interval">
+      <option value="2" selected>2 min</option>
+      <option value="5">5 min</option>
+      <option value="8">8 min</option>
+      <option value="10">10 min</option>
+      <option value="15">15 min</option>
+    </select>
+    <br>
+    <button class="btn btn-primary" onclick="displayGraph()">SHOW GRAPH</button>
+  </div>
+  <div id="chart"></div>
+  <div style="height: 300px; overflow-y: scroll;">
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>City</th>
+          <th>Temperature</th>
+          <th>timestamp</th>
+        </tr>
+      </thead>
+      <tbody>
+      </tbody>
+    </table>
+  </div>
+  <script>
+  var d = document.getElementById("sel_interval");
+  function displayGraph(){
+     var d = document.getElementById("sel_interval");
+    var interval = parseInt(d.options[d.selectedIndex].value) * 1000 * 60;
+    console.log(interval);
+    Plotly.plot('chart', [{
+      y: [getData()],
+      type: 'line'
+    }]);
+  }
+  function getData(){
+     var e = document.getElementById("sel_city");
+    var city = e.options[e.selectedIndex].value;
+    var myData = {};
+     uri = 'http://localhost:8000/api/' + city;
+    console.log(uri);
+    $.ajax({
+      url: uri,
+      dataType: "json",
+      async: false,
+      success: function (data) {
+        myData = data;
+      }
+
+    });
+    console.log(myData);
+    interval = parseInt(document.getElementById("sel_interval"));
+    tableData(myData);
+    return (myData['Temperature']);
+  }
+  function tableData(data) {
+    var ts=new Date(data['timestamp']);
+      var markup = "<tr><td>" + data['City'] + "</td><td>" + data['Temperature'] + "</td><td>" +
+        ts.toLocaleString("en-IN") + "</td></tr>";
+      $('table tbody').append(markup);
+    }
+    var cnt = 0; 
+    interval= parseInt(d.options[d.selectedIndex].value) * 1000 * 60;
+    setInterval(function () {
+      console.log(interval);
+      Plotly.extendTraces('chart', { y: [[getData()]] }, [0])
+      cnt++;
+      if (cnt > 500) {
+        Plotly.relayout('chart', {
+          xaxis: {
+            range: [cnt - 500, cnt]
+          }
+        })
+      }
+
+    }, interval);
+  </script>
+{% endblock content %}

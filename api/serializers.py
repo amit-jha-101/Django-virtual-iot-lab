@@ -2,7 +2,7 @@
 from rest_framework import serializers
 from .models import Weather_data
 
-class Weather_dataSerializer():
+class Weather_dataSerializer(serializers.ModelSerializer):
     """
     Serializer to map the model data into JSON format
     """

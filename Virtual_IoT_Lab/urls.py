@@ -16,7 +16,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from dashboard import views as dash_views
-from api import views as api
+from api import views as api_v
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('thing/', dash_views.thing,name="thing"),
@@ -27,6 +27,7 @@ urlpatterns = [
     path('certi/',dash_views.certifn,name='certi'),
     path('home/', dash_views.home, name='home'),
     path('temp/',dash_views.temp,name='temp'),
-    path('api/<slug:city>', api.clickapi,name='api'),
+    path('test1/', dash_views.test1, name='test1'),
+    path('api/<slug:city>', api_v.tempData.as_view(), name='api'),
 ]
 

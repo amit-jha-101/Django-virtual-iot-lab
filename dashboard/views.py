@@ -132,6 +132,10 @@ def temp(request):
     return render(request,'dashboard/temp.html')
 
 
+def test1(request):
+    return render(request, 'dashboard/test1.html')
+
+
 
 
 
