@@ -1,17 +1,17 @@
 from django.shortcuts import render
 
 # Create your views here.
-from django.http import HttpResponse
-from django.shortcuts import get_object_or_404
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework import status
 from rest_framework import viewsets, permissions
+from rest_framework.response import Response
 from .function import API
 from rest_framework.decorators import api_view
+from rest_framework import status
+import json
+from decimal import Decimal
+
 
 # @api_view(['GET'])
-# def clickapi(request,city="Mumbai"):
+# def clickapi(request, city="Mumbai"):
 #     """
 #     List all code snippets, or create a new snippet.
 #     """
@@ -19,14 +19,21 @@ from rest_framework.decorators import api_view
 #         api = API()
 #         print(city)
 #         data = api.getcity1JSON(city)
-        
+
 #         return Response(data)
 
-class tempData(APIView):
-    def get(self, request, city="Mumbai"):
+
+@api_view(['POST'])
+def postapi(request):
+    if request.method == 'POST':
         api = API()
-        print(city)
-        data = api.getcity1JSON(city)
+        data = request.body
         print(data)
 
-        return Response(data)
+        newData = json.loads(data)
+        newData['Temperature'] = str(newData['Temperature'])
+        flag = api.amazon(newData)
+        if flag == True:
+                return Response(status=status.HTTP_201_CREATED)
+        else:
+                return Response(status=status.HTTP_400_BAD_REQUEST)

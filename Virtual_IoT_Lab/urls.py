@@ -28,6 +28,6 @@ urlpatterns = [
     path('home/', dash_views.home, name='home'),
     path('temp/',dash_views.temp,name='temp'),
     path('test1/', dash_views.test1, name='test1'),
-    path('api/<slug:city>', api_v.tempData.as_view(), name='api'),
+    path('api/post/', api_v.postapi, name='api-post'),
 ]
 

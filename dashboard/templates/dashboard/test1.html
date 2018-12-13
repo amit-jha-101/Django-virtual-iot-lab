@@ -1,26 +1,49 @@
 {% extends 'dashboard/base.html' %}
 {% block content %}
-  <div class="form-group" style="z-index:5">
-    <label for="city"> select City : </label>
-    <select class="form-control" id="sel_city">
-      <option value="Mumbai" >Mumbai</option>
-      <option value="Delhi" selected>Delhi</option>
-      <option value="Kolkata">Kolkata</option>
-      <option value="Chennai">Chennai</option>
-      <option value="Hyderabad">Hyderabad</option>
-    </select>
-    <br>
-    <label for="interval"> Select Duration : </label>
-    <select class="form-control" id="sel_interval">
-      <option value="2" selected>2 min</option>
-      <option value="5">5 min</option>
-      <option value="8">8 min</option>
-      <option value="10">10 min</option>
-      <option value="15">15 min</option>
-    </select>
-    <br>
-    <button class="btn btn-primary" onclick="displayGraph()">SHOW GRAPH</button>
+
+  <div class="form-row">
+    <div class="col-md-6 mb-3">
+      <label for="city">Select City</label>
+      <select class="form-control" id="sel_city">
+        <option value="Mumbai">Mumbai</option>
+        <option value="Delhi" selected>Delhi</option>
+        <option value="Kolkata">Kolkata</option>
+        <option value="Chennai">Chennai</option>
+        <option value="Hyderabad">Hyderabad</option>
+      </select>   
+    </div>
   </div>
+  <div class="form-row">
+    <div class="col-md-6 mb-3">
+      <label for="interval">Select Interval</label>
+      <select class="form-control" id="sel_interval">
+        <option value="2" selected>2 min</option>
+        <option value="5">5 min</option>
+        <option value="8">8 min</option>
+        <option value="10">10 min</option>
+        <option value="15">15 min</option>
+      </select>
+    </div>
+  </div>
+    <div class="form-row">
+      <div class="col-md-3 mb-3">
+        <label for="upper_b">Temperature Should be Greater Than</label>
+        <input type="text" class="form-control" id="upper_b" placeholder="Atleast" value=0 required>
+        <div class="invalid-feedback">
+          Please provide a valid Value.
+        </div>
+      </div>
+      <div class="col-md-3 mb-3">
+        <label for="lower_b">Temperature Should be less Than</label>
+        <input type="text" class="form-control" id="lower_b" placeholder="Atmost" value=50 required>
+        <div class="invalid-feedback">
+          Please provide a valid Value.
+        </div>
+      </div>   
+    </div>
+<button class="btn btn-primary" onclick="displayGraph()">SHOW GRAPH</button>
+
+
   <div id="chart"></div>
   <div style="height: 300px; overflow-y: scroll;">
     <table class="table table-striped">
@@ -29,6 +52,7 @@
           <th>City</th>
           <th>Temperature</th>
           <th>timestamp</th>
+          <th>Result</th>
         </tr>
       </thead>
       <tbody>
@@ -50,14 +74,40 @@
      var e = document.getElementById("sel_city");
     var city = e.options[e.selectedIndex].value;
     var myData = {};
-     uri = 'http://localhost:8000/api/' + city;
+    var upper=document.getElementById("upper_b").value;
+    var lower = document.getElementById("lower_b").value;
+     uri = 'http://api.openweathermap.org/data/2.5/weather?appid=f6182a9874fa6e1a215f5a7489f8b3eb&q=' + city;
     console.log(uri);
     $.ajax({
       url: uri,
       dataType: "json",
       async: false,
       success: function (data) {
-        myData = data;
+        myData['City'] = city;
+        myData['Temperature'] = (data['main']['temp']) - 273.15;
+        myData['timestamp'] = Date.now();
+        
+        if (myData['Temperature'] < upper || myData['Temperature'] > lower) {
+          console.log("ERROR!");
+          myData['status'] ="NOT OK";
+        }
+        else{
+           myData['status'] = "OK";
+              $.ajax({
+            type: 'POST',
+            dataType: 'json',
+            contentType: 'application/json; charset=utf-8',
+            url: 'http://localhost:8000/api/post/',
+            data: JSON.stringify({
+              "City": myData['City'],
+              "Temperature": myData['Temperature'],
+              "timestamp": myData['timestamp']
+            }),
+            success: function (result) {
+              console.log('yayy'+result);
+            }
+          });
+        }
       }
 
     });
@@ -69,7 +119,7 @@
   function tableData(data) {
     var ts=new Date(data['timestamp']);
       var markup = "<tr><td>" + data['City'] + "</td><td>" + data['Temperature'] + "</td><td>" +
-        ts.toLocaleString("en-IN") + "</td></tr>";
+        ts.toLocaleString("en-IN") + "</td><td>" + data['status'] + "</td></tr>";
       $('table tbody').append(markup);
     }
     var cnt = 0; 
