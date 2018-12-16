@@ -4,6 +4,7 @@ from django.utils import timezone
 
 
 class Device(models.Model):
+  id=models.AutoField(primary_key=True)
   name = models.CharField(max_length=100)
   desc = models.TextField()
   date_created= models.DateTimeField(default=timezone.now)
@@ -14,6 +15,7 @@ class Device(models.Model):
     return self.name
 
 class Rule(models.Model):
+  id = models.AutoField(primary_key=True)
   name=models.CharField(max_length=100)
   sensor=models.ForeignKey(Device,on_delete=models.CASCADE)
   RULE_TYPES=(
