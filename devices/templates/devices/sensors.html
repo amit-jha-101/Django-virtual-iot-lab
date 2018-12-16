@@ -1,0 +1,58 @@
+{% extends "devices/base.html" %} {% block content %}
+<h3>
+  <center>LIST OF DEVICES/SENSORS</center>
+</h3>
+<ul class="list-group">
+  {% for d in sensors %}
+
+  <div class="row">
+  <li class="list-group-item col-md-10">
+
+    <b> Sensor Name:</b> {{d.name}}
+    <br>
+    <b> Description:</b> {{d.desc}}
+    <br>
+    <b>API: </b>{{d.api}}
+    <br><br>
+    <b>Rules Attached:</b><br><br>
+    <ol class="list-group">
+    {% for r in d.rule_set.all %}
+    <div class="row" style="display:flex;align-items: center">
+      <div class="col-md-9">
+        <li class="list-group-item">
+          <b> Rule Name:</b> {{r.name}}
+          <br>
+          <b> Rule Type:</b> {{r.Rule_type}} {{r.ruleValue}}
+          <br>
+          <b> Rule Field:</b> {{r.rule_field}}
+        </li>
+      </div>
+      <div class="col-md-1">
+        <button class="btn btn-primary" onclick="editrule(r)">Edit</button>
+      </div>
+      <div class="col-md-1">
+      <button class="btn btn-primary ">Delete</button>
+      </div>
+      
+    </div>
+    {% endfor %}  
+    </ol>
+  </li>
+  <div class ="col-md-2 mt-2 d-flex justify-content-center">
+    <div class="d-flex flex-column">
+  <button class="btn btn-primary mb-2">Edit</button>
+  <button class="btn btn-primary mb-2">Delete</button>
+  <button class="btn btn-primary mb-2">Test</button>
+  <button class="btn btn-primary mb-2">View Analysis</button>
+  <button class="btn btn-primary mb-2">Add New Rule</button>
+  </div>
+  </div>
+</div>
+  {% endfor %}
+</ul>
+<script>
+  function editrule(r) {
+    alert(r);
+  }
+</script>
+{% endblock content %}

@@ -14,7 +14,7 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path,include
 from dashboard import views as dash_views
 from api import views as api_v
 urlpatterns = [
@@ -29,5 +29,6 @@ urlpatterns = [
     path('temp/',dash_views.temp,name='temp'),
     path('test1/', dash_views.test1, name='test1'),
     path('api/post/', api_v.postapi, name='api-post'),
+    path('devices/',include('devices.urls'))
 ]
 
