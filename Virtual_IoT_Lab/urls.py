@@ -28,7 +28,7 @@ urlpatterns = [
     path('home/', dash_views.home, name='home'),
     path('temp/',dash_views.temp,name='temp'),
     path('test1/', dash_views.test1, name='test1'),
-    path('api/post/', api_v.postapi, name='api-post'),
+    path('api/', include('api.urls')),
     path('devices/',include('devices.urls'))
 ]
 

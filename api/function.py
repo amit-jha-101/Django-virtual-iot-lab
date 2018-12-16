@@ -9,7 +9,7 @@ import random
 import string
 
 class API:
-
+   
     def amazon(self, data):
         conn = boto3.resource('dynamodb')
         table = conn.Table('Temp_sensor')
@@ -43,6 +43,10 @@ class API:
             return False
         else:
             return True
+
+    
+
+
 
    
     

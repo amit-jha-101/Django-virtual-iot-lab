@@ -17,6 +17,7 @@ class Device(models.Model):
 class Rule(models.Model):
   id = models.AutoField(primary_key=True)
   name=models.CharField(max_length=100)
+  ruleDescription =  models.TextField(blank=True, null=True)
   sensor=models.ForeignKey(Device,on_delete=models.CASCADE)
   RULE_TYPES=(
     ('lb','LOWER_BOUND'),
@@ -26,5 +27,5 @@ class Rule(models.Model):
   Rule_type=models.CharField(max_length=2,choices=RULE_TYPES)
   ruleValue=models.IntegerField()
   rule_field=models.CharField(max_length=100)
-  
+  ruleFlag = models.BooleanField(default=True)
 

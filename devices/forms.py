@@ -9,6 +9,7 @@ class DeviceCreationForm(forms.ModelForm):
 
 
 class RuleCreationForm(forms.ModelForm):
+  
   class Meta:
     model = Rule
     fields = '__all__'

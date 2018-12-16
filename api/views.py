@@ -10,17 +10,7 @@ import json
 from decimal import Decimal
 
 
-# @api_view(['GET'])
-# def clickapi(request, city="Mumbai"):
-#     """
-#     List all code snippets, or create a new snippet.
-#     """
-#     if request.method == 'GET':
-#         api = API()
-#         print(city)
-#         data = api.getcity1JSON(city)
 
-#         return Response(data)
 
 
 @api_view(['POST'])
@@ -37,3 +27,6 @@ def postapi(request):
                 return Response(status=status.HTTP_201_CREATED)
         else:
                 return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+
