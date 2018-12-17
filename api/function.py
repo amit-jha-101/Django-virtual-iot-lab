@@ -43,9 +43,12 @@ class API:
             return False
         else:
             return True
-
+    
+    
     def pushOnCloud(self,data):
         topic = data['sensor']+"/data"
+        data['key'] = ''.join(random.choice(string.ascii_uppercase + string.digits)
+                      for _ in range(8))
         myMQTTClient = AWSIoTMQTTClient(data['sensor'])
         myMQTTClient.configureEndpoint(
             "a3afa41mc06g6e.iot.us-west-2.amazonaws.com", 8883)
@@ -63,6 +66,7 @@ class API:
         print(data)
         payload = json.dumps(data)
         response=myMQTTClient.publish(topic, payload, 0)
+        print("payload = ",payload)
         print(response)
         if response == None:
             return False

@@ -1,0 +1,17 @@
+
+{% extends 'devices/base.html' %} {% block content %}
+<fieldset class="form-group">
+  <legend class="border-bottom mb-4">
+    Testing Sensor
+  </legend>
+  <label for="city">Select Sensor</label>
+  <select class="form-control" id="sel_sensor">
+
+    {% for sensor in sensors %}
+    <option value="{{sensor.api}}">{{sensor.name}}</option>
+    {% endfor %}
+
+  </select>
+
+
+  {% endblock content %}
