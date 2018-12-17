@@ -29,6 +29,11 @@ def edit_d(request):
   
   return render(request, 'devices/sensors.html')
 
+def test(request):
+  context = {
+    'sensors': Device.objects.all(),
+  }
+  return render(request,'devices/test.html',context)
 
 def create_r(request):
   if request.method == "POST":

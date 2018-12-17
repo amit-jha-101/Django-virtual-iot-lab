@@ -1,0 +1,135 @@
+{% extends 'devices/base.html' %} {% block content %}
+<fieldset class="form-group">
+  <legend class="border-bottom mb-4">
+    Testing Sensor
+  </legend>
+  <label for="city">Select Sensor</label>
+  <select class="form-control" id="sel_sensor">
+
+    {% for sensor in sensors %}
+    <option value="{{sensor.api}}">{{sensor.name}}</option>
+    {% endfor %}
+
+  </select>
+  <br>
+  <label for="interval">Select Interval</label>
+  <select class="form-control" id="sel_interval">
+    <option value="2" selected>2 min</option>
+    <option value="5">5 min</option>
+    <option value="8">8 min</option>
+    <option value="10">10 min</option>
+    <option value="15">15 min</option>
+  </select>
+</fieldset>
+<div class="form-group">
+  <button class="btn btn-outline-info" id="testbut" onclick="startTesting()">Start Testing</button> <br><br><b>Requests
+    Sent:</b> <span id="s">0</span><br> <b>Successful Responses:</b> <span id="r">0</span>
+</div>
+<div style="height: 300px; overflow-y: scroll;">
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>Sensor</th>
+        <th>Value 1</th>
+        <th>Value 2</th>
+        <th>Timestamp</th>
+      </tr>
+    </thead>
+    <tbody>
+    </tbody>
+  </table>
+</div>
+<script>
+  var status = 0;
+  var d = document.getElementById("sel_interval");
+  interval = 2;
+  s = 0;
+  se = document.getElementById("s");
+  r = 0;
+  re = document.getElementById("r");
+  var e = document.getElementById("sel_sensor");
+  var Sensor = e.options[e.selectedIndex].value;
+  uri = "https://reqres.in/api/users?page=2";
+  testinterval = null;
+  function startTesting() {
+    if (status == 1) {
+      stopTesting();
+      return;
+    }
+    else {
+      document.getElementById("testbut").innerText = "Stop Testing";
+      status = 1;
+      uri = e.options[e.selectedIndex].value;
+      Sensor=e.options[e.selectedIndex].innerText;
+      testing();
+      interval = parseInt(document.getElementById("sel_interval").value) * 1000 * 60;
+      testinterval = setInterval(function () {
+        console.log(interval);
+        testing();
+        cnt++;
+      }, interval);
+    }
+
+  }
+
+  function stopTesting() {
+    console.log("In stop testing");
+    status = 0;
+    document.getElementById("testbut").innerText = "Start Testing";
+    clearInterval(testinterval);
+  }
+
+  function testing() {
+    s++;
+    se.innerHTML = s;
+    var myData = {};
+
+    console.log(uri);
+    $.ajax({
+      url: uri,
+      dataType: "json",
+      async: false,
+      success: function (data) {
+        myData['sensor'] = Sensor;
+        myData['value1'] = (data['main']['temp']) - 273.15;
+        myData['value2'] = (data['main']['temp']) - 273.15;
+        //myData['value'] = 27;
+        myData['timestamp'] = Date.now();
+        tableData(myData);
+        r = r + 1;
+        console.log(myData);
+        re.innerHTML = r;
+        $.ajax({
+          type: 'POST',
+          dataType: 'json',
+          contentType: 'application/json; charset=utf-8',
+          url: 'http://localhost:8000/api/pushData/',
+          data: JSON.stringify({
+            "sensor": Sensor,
+            "value1": myData['value1'],
+            "value2": myData['value2'],
+            "timestamp": myData['timestamp']
+          }),
+          success: function (result) {
+            console.log('yayy' + result);
+          }
+        });
+      }
+
+    });
+    console.log(myData);
+
+
+    return (myData['value1']);
+  }
+  function tableData(data) {
+    var ts = new Date(data['timestamp']);
+    var markup = "<tr><td>" + data['sensor'] + "</td><td>" + data['value1'] + "</td><td>" + data['value2'] + "</td><td>" +
+      ts.toLocaleString("en-IN") + "</td></tr>";
+    $('table tbody').append(markup);
+  }
+  var cnt = 0;
+
+
+</script>
+{% endblock content %}

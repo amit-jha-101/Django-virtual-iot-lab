@@ -44,6 +44,32 @@ class API:
         else:
             return True
 
+    def pushOnCloud(self,data):
+        topic = data['sensor']+"/data"
+        myMQTTClient = AWSIoTMQTTClient(data['sensor'])
+        myMQTTClient.configureEndpoint(
+            "a3afa41mc06g6e.iot.us-west-2.amazonaws.com", 8883)
+        myMQTTClient.configureCredentials(os.path.join(settings.ROOT_PATH, 'root-CA.crt'), os.path.join(settings.ROOT_PATH, 'Temp_sensor.private.key'),
+                                          os.path.join(settings.ROOT_PATH, 'Temp_sensor.cert.pem'))
+        print('start connection')
+        # Infinite offline Publish queueing
+        myMQTTClient.configureOfflinePublishQueueing(-1)
+        myMQTTClient.configureDrainingFrequency(2)  # Draining: 2 Hz
+        myMQTTClient.configureConnectDisconnectTimeout(1000)  # 10 sec
+        myMQTTClient.configureMQTTOperationTimeout(5)  # 5 sec
+        myMQTTClient.connect()
+        print('connected')
+        print('Topic is ', topic)
+        print(data)
+        payload = json.dumps(data)
+        response=myMQTTClient.publish(topic, payload, 0)
+        print(response)
+        if response == None:
+            return False
+        else:
+            return True
+
+
     
 
 
