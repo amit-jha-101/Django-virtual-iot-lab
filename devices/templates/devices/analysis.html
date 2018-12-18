@@ -2,16 +2,70 @@
 {% extends 'devices/base.html' %} {% block content %}
 <fieldset class="form-group">
   <legend class="border-bottom mb-4">
-    Testing Sensor
+    Test Analysis
   </legend>
-  <label for="city">Select Sensor</label>
+  <label for="sel_sensor">Select Sensor</label>
   <select class="form-control" id="sel_sensor">
 
     {% for sensor in sensors %}
     <option value="{{sensor.api}}">{{sensor.name}}</option>
     {% endfor %}
-
   </select>
+  <br>
+    <div class="form-row">
+      <div class="col-md-3 mb-3">
+        <label for="from">Start Date</label>
+        <input type="date" class="form-control" id="from" required>
+        <div class="invalid-feedback">
+          Please provide a valid Value.
+        </div>
+      </div>
+      <div class="col-md-3 mb-3">
+        <label for="to">End Date</label>
+        <input type="date" class="form-control" id="to" required>
+        <div class="invalid-feedback">
+          Please provide a valid Value.
+        </div>
+      </div>
+    </div>
+    <button class="btn btn-primary" onclick="displayData()">SHOW RESULTS</button>
+</fieldset>
 
+  <div style="height: 300px; overflow-y: scroll;">
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>Timestamp</th>
+          <th>Value Obtained</th>
+        </tr>
+      </thead>
+      <tbody>
+      </tbody>
+    </table>
+  </div>
 
+  <script>
+  function displayData(){
+    var uri="http://localhost:8000/api/getData/";
+    var myData = {};
+     $.ajax({
+      url: uri,
+      dataType: "json",
+      async: false,
+      success: function (data) {
+        myData=data;
+      }
+  });
+  var j=JSON.parse(myData);
+  for(var i in j){
+    console.log(j[i]);
+    tableData(j[i]);
+  }
+
+}
+   function tableData(data) {
+      var markup = "<tr><td>" + data['timestamp'] + "</td><td>" + data['city'] + "</td></tr>";
+      $('table tbody').append(markup);
+    }
+  </script>
   {% endblock content %}

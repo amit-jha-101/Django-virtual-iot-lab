@@ -28,6 +28,16 @@ def postapi(request):
                 return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
+@api_view(['GET'])
+def dynamo(request):
+    if request.method == 'GET':
+        api = API()
+        # newData = "[{\"city\": \"Id1\", \"timestamp\": \"201812180203356\"}, {\"city\": \"Id1\", \"timestamp\": \"20181218020338\"}]"
+        newData = api.getData()
+        return Response(newData)
+
+
+
 @api_view(['POST'])
 @parser_classes((JSONParser,))
 def testData(request):

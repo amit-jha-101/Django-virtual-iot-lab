@@ -62,8 +62,11 @@ def create_r(request):
     form = RuleCreationForm()
   return render(request, 'devices/rule.html', {'form': form})
 
-# def about(request):
-#   return render(request, 'blog/about.html', {'title': 'About'})
+def analyse(request):
+  context = {
+      'sensors': Device.objects.all(),
+  }
+  return render(request, 'devices/analysis.html', context)
 
 
 

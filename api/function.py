@@ -4,11 +4,26 @@ from datetime import datetime
 import os
 from django.conf import settings
 from AWSIoTPythonSDK.MQTTLib import AWSIoTMQTTClient
+from boto3.dynamodb.conditions import Key, Attr
 import boto3
 import random
 import string
 
 class API:
+
+#this function by defaults queries a table in dynamoDB and returns data array in json format
+#Here City should represent the sensor name and the eq field must map to DATE somehow
+
+    def getData(self):
+        conn = boto3.resource('dynamodb')
+        table = conn.Table('temp')
+        response = table.query(
+            KeyConditionExpression=Key('city').eq('Id1')
+        )
+        items = response['Items']
+        payload = json.dumps(items)
+        return payload
+
    
     def amazon(self, data):
         conn = boto3.resource('dynamodb')
