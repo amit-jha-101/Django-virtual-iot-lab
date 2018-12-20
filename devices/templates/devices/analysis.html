@@ -30,42 +30,115 @@
     </div>
     <button class="btn btn-primary" onclick="displayData()">SHOW RESULTS</button>
 </fieldset>
-
-  <div style="height: 300px; overflow-y: scroll;">
-    <table class="table table-striped">
-      <thead>
-        <tr>
-          <th>Timestamp</th>
-          <th>Value Obtained</th>
-        </tr>
-      </thead>
-      <tbody>
-      </tbody>
-    </table>
+  
+  <div style="height: 200px; overflow-y: scroll;" id="data">
+  <p id="showData"></p>
   </div>
 
+
   <script>
+  var myData = {};
   function displayData(){
-    var uri="http://localhost:8000/api/getData/";
-    var myData = {};
+    var uri="http://localhost:8000/api/makeTable/temp";
+    
      $.ajax({
       url: uri,
       dataType: "json",
       async: false,
       success: function (data) {
+        console.log(data)
         myData=data;
       }
   });
-  var j=JSON.parse(myData);
-  for(var i in j){
-    console.log(j[i]);
-    tableData(j[i]);
-  }
-
+  
+  CreateTableFromJSON(JSON.parse(myData["Items"]));
 }
-   function tableData(data) {
-      var markup = "<tr><td>" + data['timestamp'] + "</td><td>" + data['city'] + "</td></tr>";
-      $('table tbody').append(markup);
+var columns = []
+  
+function CreateTableFromJSON(myData) {
+        console.log("Started");
+        
+        var myBooks = myData;
+        // EXTRACT VALUE FOR HTML HEADER. 
+        // ('Book ID', 'Book Name', 'Category' and 'Price')
+        var col = [];
+        for (var i = 0; i < myBooks.length; i++) {
+            for (var key in myBooks[i]) {
+                if (col.indexOf(key) === -1) {
+                    col.push(key);
+                }
+            }
+        }
+        columns = col;
+        // CREATE DYNAMIC TABLE.
+        var table = document.createElement("table");
+        table.className = "table table-striped";
+
+        // CREATE HTML TABLE HEADER ROW USING THE EXTRACTED HEADERS ABOVE.
+
+        var tr = table.insertRow(-1);                   // TABLE ROW.
+
+        for (var i = 0; i < col.length; i++) {
+            var th = document.createElement("th");      // TABLE HEADER.
+            th.innerHTML = col[i];
+            tr.appendChild(th);
+        }
+
+        // ADD JSON DATA TO THE TABLE AS ROWS.
+        for (var i = 0; i < myBooks.length; i++) {
+
+            tr = table.insertRow(-1);
+
+            for (var j = 0; j < col.length; j++) {
+                var tabCell = tr.insertCell(-1);
+                tabCell.innerHTML = myBooks[i][col[j]];
+            }
+        }
+
+        // FINALLY ADD THE NEWLY CREATED TABLE WITH JSON DATA TO A CONTAINER.
+        var divContainer = document.getElementById("showData");
+        divContainer.innerHTML = "";
+        divContainer.appendChild(table);
+        console.log("Ended");
+        var btn = document.createElement("BUTTON");
+        var t = document.createTextNode("Plot Graph");
+        divContainer.appendChild(btn);
+       btn.appendChild(t);
+       btn.onclick = function(){
+         getAxis();
+       };
+}
+function getAxis(){
+  var myDiv = document.getElementById("data");
+
+    document.write("Select the y-axis feature");
+    var selectList = document.createElement("select");
+    selectList.id = "mySelecty";
+    myDiv.appendChild(selectList);
+
+   for (var i = 0; i < array.length; i++) {
+     if (typeof myData[columns[i]] == "number"){
+      var option = document.createElement("option");
+      option.value = array[i];
+      option.text = array[i];
+      selectList.appendChild(option);
+     
+     }
     }
+    document.write("Select the x-axis feature");
+    var selectList = document.createElement("select");
+    selectList.id = "mySelectx";
+    myDiv.appendChild(selectList);
+
+   for (var i = 0; i < array.length; i++) {
+      var option = document.createElement("option");
+      option.value = array[i];
+      option.text = array[i];
+      selectList.appendChild(option);
+    } 
+
+ }
+
+
   </script>
   {% endblock content %}

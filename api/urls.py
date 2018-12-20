@@ -4,6 +4,7 @@ from . import views
 urlpatterns = [
     path('post/',views.postapi,name = " post-api"),
     path('pushData/',views.testData,name="pushData"),
-    path('getData/',views.dynamo,name="getdata")
+    path('getData/',views.dynamo,name="getdata"),
+    path('makeTable/<slug:tableName>',views.makeTable,name="makeTable")
 
 ]

@@ -44,10 +44,22 @@ def testData(request):
     if request.method == 'POST':
         api = API()
         data =  request.data
-        print(data)
-        print(type(data))
+        
         flag = api.pushOnCloud(data)
         if flag == True:
                 return Response(status=status.HTTP_201_CREATED)
         else:
                 return Response(status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['GET'])
+def makeTable(request, tableName = None):
+        if request.method == 'GET':
+                if tableName == None:
+                        return Response(status = status.HTTP_400_BAD_REQUEST)
+                else:
+                        api = API()
+                        data = api.getTableData(tableName)
+                        if data == None:
+                                return Response(status = status.HTTP_400_BAD_REQUEST)
+                        else:
+                                return Response(data)

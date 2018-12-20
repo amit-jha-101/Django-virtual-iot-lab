@@ -8,12 +8,12 @@ from boto3.dynamodb.conditions import Key, Attr
 import boto3
 import random
 import string
-
+import pandas as pd
 class API:
 
 #this function by defaults queries a table in dynamoDB and returns data array in json format
 #Here City should represent the sensor name and the eq field must map to DATE somehow
-
+    dataframe = None
     def getData(self):
         conn = boto3.resource('dynamodb')
         table = conn.Table('temp')
@@ -62,8 +62,8 @@ class API:
     
     def pushOnCloud(self,data):
         topic = data['sensor']+"/data"
-        data['key'] = ''.join(random.choice(string.ascii_uppercase + string.digits)
-                      for _ in range(8))
+        # data['key'] = ''.join(random.choice(string.ascii_uppercase + string.digits)
+        #               for _ in range(8))
         myMQTTClient = AWSIoTMQTTClient(data['sensor'])
         myMQTTClient.configureEndpoint(
             "a3afa41mc06g6e.iot.us-west-2.amazonaws.com", 8883)
@@ -87,6 +87,24 @@ class API:
             return False
         else:
             return True
+    
+    def getTableData(self,tableName):
+        if tableName == None:
+            return None
+        else:
+            client = boto3.resource('dynamodb')
+            table = client.Table('temp')
+            response = table.scan()
+            items = response["Items"]
+            lists = []
+            for item in items:
+                lists.append(item['payload'])
+            self.dataframe =pd.DataFrame.from_dict(lists,orient="columns")
+            Json = {}
+            Json["Items"] = self.dataframe.to_json(orient='records')
+            return Json
+
+
 
 
     

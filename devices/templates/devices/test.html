@@ -93,7 +93,6 @@
       success: function (data) {
         myData['sensor'] = Sensor;
         myData['temperature'] = (data['main']['temp']) - 273.15;
-        myData['value2'] = (data['main']['temp']) - 273.15;
         myData['city'] = 'Mumbai';
         //myData['value'] = 27;
         myData['timestamp'] =js_yyyy_mm_dd_hh_mm_ss();
@@ -128,12 +127,12 @@
     console.log(myData);
 
 
-    return (myData['value1']);
+    
   }
   function tableData(data) {
-    var ts = new Date(data['timestamp']);
-    var markup = "<tr><td>" + data['sensor'] + "</td><td>" + data['value1'] + "</td><td>" + data['value2'] + "</td><td>" +
-      ts.toLocaleString("en-IN") + "</td></tr>";
+   
+    var markup = "<tr><td>" + data['sensor'] + "</td><td>" + data['temperature'] + "</td><td>" + data['city'] + "</td><td>" +
+     data['timestamp'] + "</td></tr>";
     $('table tbody').append(markup);
   }
   var cnt = 0;
@@ -172,7 +171,7 @@ function js_yyyy_mm_dd_hh_mm_ss () {
   hour = "" + now.getHours(); if (hour.length == 1) { hour = "0" + hour; }
   minute = "" + now.getMinutes(); if (minute.length == 1) { minute = "0" + minute; }
   second = "" + now.getSeconds(); if (second.length == 1) { second = "0" + second; }
-  return year + month + day + hour+ minute + second;
+  return year +"-"+ month +"-"+ day +"-  "+ hour+":"+ minute +":"+ second;
 }
 
 </script>
