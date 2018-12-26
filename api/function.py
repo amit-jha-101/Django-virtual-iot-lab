@@ -102,8 +102,17 @@ class API:
             self.dataframe =pd.DataFrame.from_dict(lists,orient="columns")
             Json = {}
             Json["Items"] = self.dataframe.to_json(orient='records')
+            Json["Max"] = self.getMaxTemp()
+            Json["Min"] = self.getMinTemp()
+            Json["temperature"] = list(self.dataframe['temperature'])
+            Json["timestamp"] = list(self.dataframe['timestamp'])
             return Json
 
+    def getMaxTemp(self):
+        return self.dataframe['temperature'].max()
+    
+    def getMinTemp(self):
+        return self.dataframe['temperature'].min()
 
 
 

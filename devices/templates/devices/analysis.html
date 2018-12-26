@@ -30,10 +30,16 @@
     </div>
     <button class="btn btn-primary" onclick="displayData()">SHOW RESULTS</button>
 </fieldset>
-  
+  <div id="buttons" >
+  </div>
+  <div id="results">
+  </div>
   <div style="height: 200px; overflow-y: scroll;" id="data">
   <p id="showData"></p>
+  <div id = "graph">
   </div>
+  </div>
+  
 
 
   <script>
@@ -51,10 +57,62 @@
       }
   });
   
+  console.log(myData);
+  createButtons();
   CreateTableFromJSON(JSON.parse(myData["Items"]));
 }
 var columns = []
+
+// creation of buttons
+function createButtons(){
+ var max =  document.createElement("button");
+ var min =  document.createElement("button");
+ var chart =  document.createElement("button");
+  var t = document.createTextNode("Get Max Value");
+  max.className = "btn btn-primary";
+  min.className = "btn btn-primary";
+  chart.className = "btn btn-primary";
+  max.appendChild(t);  
+  t = document.createTextNode("Get Min Value");
+  min.appendChild(t);  
+  t = document.createTextNode("Get Graph");
+  chart.appendChild(t);    
+  max.onclick = function(){
+      getMaxValue();
+  };
+  min.onclick = function(){
+    getMinValue();
+  };
+  chart.onclick = function(){
+    drawGraph();
+  };
+  var div = document.getElementById("buttons");
+  div.appendChild(max);
+  div.appendChild(min);
+  div.appendChild(chart);
+}  
+
+function getMaxValue(){
+  var div = document.getElementById("results");
+  div.innerHTML = "<p> the maximum value is  "+ myData['Max']+" degree celsius  </p>";
+}
+
+function getMinValue(){
+  var div = document.getElementById("results");
+  div.innerHTML = "<p> the minimum value is  "+ myData['Min']+" degree celsius  </p>";
+}
+
+function drawGraph(){
+  var data = {
+    x:myData['timestamp'],
+    y:myData['temperature'],
+    type: 'scatter'
+  };
+  console.log(data);
+ 
+  Plotly.newPlot('graph', [data]);
   
+}
 function CreateTableFromJSON(myData) {
         console.log("Started");
         
@@ -100,13 +158,7 @@ function CreateTableFromJSON(myData) {
         divContainer.innerHTML = "";
         divContainer.appendChild(table);
         console.log("Ended");
-        var btn = document.createElement("BUTTON");
-        var t = document.createTextNode("Plot Graph");
-        divContainer.appendChild(btn);
-       btn.appendChild(t);
-       btn.onclick = function(){
-         getAxis();
-       };
+        
 }
 function getAxis(){
   var myDiv = document.getElementById("data");
