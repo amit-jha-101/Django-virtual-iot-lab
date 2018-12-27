@@ -24,7 +24,7 @@ class API:
         payload = json.dumps(items)
         return payload
 
-   
+# this function publishes the data to the topic and also adds the data to dynamoDB 
     def amazon(self, data):
         conn = boto3.resource('dynamodb')
         table = conn.Table('Temp_sensor')
@@ -59,7 +59,7 @@ class API:
         else:
             return True
     
-    
+ # For just publishing the data to the topic defined by the sensor name present in the data   
     def pushOnCloud(self,data):
         topic = data['sensor']+"/data"
         # data['key'] = ''.join(random.choice(string.ascii_uppercase + string.digits)
@@ -88,6 +88,7 @@ class API:
         else:
             return True
     
+    # for getting the data from DynamoDB table
     def getTableData(self,tableName):
         if tableName == None:
             return None

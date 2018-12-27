@@ -1,4 +1,11 @@
-{% extends 'devices/base.html' %} {% block content %}
+{% extends 'devices/base.html' %}{% load static %} 
+{% block menubar%}
+   {% comment %} Header Tags {% endcomment %}
+<script src="{% static 'devices/testing.js' %}"></script>
+{% endblock menubar %}
+
+{% block content %}
+   {% comment %} Selecting the Sensor {% endcomment %}
 <fieldset class="form-group">
   <legend class="border-bottom mb-4">
     Testing Sensor
@@ -12,6 +19,8 @@
 
   </select>
   <br>
+
+     {% comment %} Selecting interval for testing {% endcomment %}
   <label for="interval">Select Interval</label>
   <select class="form-control" id="sel_interval">
     <option value="2" selected>2 min</option>
@@ -21,10 +30,12 @@
     <option value="15">15 min</option>
   </select>
 </fieldset>
+
 <div class="form-group">
   <button class="btn btn-outline-info" id="testbut" onclick="startTesting()">Start Testing</button> <br><br><b>Requests
     Sent:</b> <span id="s">0</span><br> <b>Successful Responses:</b> <span id="r">0</span>
 </div>
+   {% comment %} table for test results {% endcomment %}
 <div style="height: 300px; overflow-y: scroll;">
   <table class="table table-striped">
     <thead>
@@ -39,140 +50,4 @@
     </tbody>
   </table>
 </div>
-<script>
-  var status = 0;
-  var d = document.getElementById("sel_interval");
-  interval = 2;
-  s = 0;
-  
-  se = document.getElementById("s");
-  r = 0;
-  re = document.getElementById("r");
-  var e = document.getElementById("sel_sensor");
-  var Sensor = e.options[e.selectedIndex].value;
-  uri = 'http://api.openweathermap.org/data/2.5/weather?appid=f6182a9874fa6e1a215f5a7489f8b3eb&q=Mumbai';
-  testinterval = null;
-  function startTesting() {
-    if (status == 1) {
-      stopTesting();
-      return;
-    }
-    else {
-      document.getElementById("testbut").innerText = "Stop Testing";
-      status = 1;
-      uri = e.options[e.selectedIndex].value;
-      Sensor=e.options[e.selectedIndex].innerText;
-      testing();
-      interval = parseInt(document.getElementById("sel_interval").value) * 1000 * 60;
-      testinterval = setInterval(function () {
-        console.log(interval);
-        testing();
-        cnt++;
-      }, interval);
-    }
-
-  }
-
-  function stopTesting() {
-    console.log("In stop testing");
-    status = 0;
-    document.getElementById("testbut").innerText = "Start Testing";
-    clearInterval(testinterval);
-  }
-
-  function testing() {
-    s++;
-    se.innerHTML = s;
-    var myData = {};
-
-    console.log(uri);
-    $.ajax({
-      url: uri,
-      dataType: "json",
-      async: false,
-      success: function (data) {
-        myData['sensor'] = Sensor;
-        myData['temperature'] = (data['main']['temp']) - 273.15;
-        myData['city'] = 'Mumbai';
-        //myData['value'] = 27;
-        myData['timestamp'] =js_yyyy_mm_dd_hh_mm_ss();
-        console.log(js_yyyy_mm_dd_hh_mm_ss());
-        tableData(myData);
-        r = r + 1;
-        console.log(myData);
-        re.innerHTML = r;
-        $.ajax({
-          type: 'POST',
-          dataType: 'json',
-          async:false,
-          csrfmiddlewaretoken: "{{ csrf_token }}",
-          contentType: 'application/json; charset=utf-8',
-          url: 'http://localhost:8000/api/pushData/',
-          data: JSON.stringify(myData),
-           headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json'
-                    },
-          beforeSend: function (xhr, settings) {
-              xhr.setRequestHeader("X-CSRFToken", '{{ csrf_token }}');
-          },
-          success: function (result) {
-            
-            console.log('yayy' + result);
-          }
-        });
-      }
-
-    });
-    console.log(myData);
-
-
-    
-  }
-  function tableData(data) {
-   
-    var markup = "<tr><td>" + data['sensor'] + "</td><td>" + data['temperature'] + "</td><td>" + data['city'] + "</td><td>" +
-     data['timestamp'] + "</td></tr>";
-    $('table tbody').append(markup);
-  }
-  var cnt = 0;
-
-//AJAX Requirement for posting data to rest API 
-function getCookie(name) {
-    var cookieValue = null;
-    if (document.cookie && document.cookie != '') {
-        var cookies = document.cookie.split(';');
-        for (var i = 0; i < cookies.length; i++) {
-            var cookie = jQuery.trim(cookies[i]);
-            // Does this cookie string begin with the name we want?
-            if (cookie.substring(0, name.length + 1) == (name + '=')) {
-                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                break;
-            }
-        }
-    }
-    return cookieValue;
-}
-
-$.ajaxSetup({
-    beforeSend: function(xhr, settings) {
-        if (!(/^http:.*/.test(settings.url) || /^https:.*/.test(settings.url))) {
-            // Only send the token to relative URLs i.e. locally.
-            xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
-        }
-    }
-});
-
-function js_yyyy_mm_dd_hh_mm_ss () {
-  now = new Date();
-  year = "" + now.getFullYear();
-  month = "" + (now.getMonth() + 1); if (month.length == 1) { month = "0" + month; }
-  day = "" + now.getDate(); if (day.length == 1) { day = "0" + day; }
-  hour = "" + now.getHours(); if (hour.length == 1) { hour = "0" + hour; }
-  minute = "" + now.getMinutes(); if (minute.length == 1) { minute = "0" + minute; }
-  second = "" + now.getSeconds(); if (second.length == 1) { second = "0" + second; }
-  return year +"-"+ month +"-"+ day +"-  "+ hour+":"+ minute +":"+ second;
-}
-
-</script>
 {% endblock content %}
