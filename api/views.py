@@ -1,9 +1,12 @@
 from django.shortcuts import render
+
+# Create your views here.
+from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 # Create your views here.
 from rest_framework import viewsets, permissions
 from rest_framework.response import Response
-from .function import API
+from .functions import API 
 from rest_framework.decorators import api_view
 from rest_framework import status
 import json
@@ -63,3 +66,22 @@ def makeTable(request, tableName = None):
                                 return Response(status = status.HTTP_400_BAD_REQUEST)
                         else:
                                 return Response(data)
+
+@api_view(['POST'])
+def createSensor(request):
+        if request.method == 'POST':
+                print(request.body)
+                data = json.loads(request.body)
+                print(data)
+                api = API()
+                api.createTable(data)
+                boolean = api.createThing(data)
+                api.errorTable(data)
+                api.createRule(data)
+                if boolean == True:
+                        return Response(status= status.HTTP_201_CREATED)
+                else:
+                        return Response(status = status.HTTP_204_NO_CONTENT)
+
+
+                

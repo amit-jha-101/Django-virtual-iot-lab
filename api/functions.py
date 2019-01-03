@@ -2,6 +2,7 @@ import requests
 import json
 from datetime import datetime
 import os
+from .models import SensorData,ThingRules
 from django.conf import settings
 from AWSIoTPythonSDK.MQTTLib import AWSIoTMQTTClient
 from boto3.dynamodb.conditions import Key, Attr
@@ -114,6 +115,149 @@ class API:
     
     def getMinTemp(self):
         return self.dataframe['temperature'].min()
+    
+    def createTable(self, data):
+        dynamodb = boto3.client('dynamodb')
+        table = dynamodb.create_table(
+            TableName=str(data['SensorName']+"Data"),
+            KeySchema=[
+                {
+                    'AttributeName':'Sensor_id',
+                    'KeyType':'HASH'
+                },
+                {
+                    'AttributeName':'Sensor_name',
+                    'KeyType':'RANGE'
+
+                }
+
+            ],
+            AttributeDefinitions = [
+                {
+                    'AttributeName':'Sensor_id',
+                    'AttributeType':'N'
+                },
+                {
+                    'AttributeName':'Sensor_name',
+                    'AttributeType':'S'
+                }
+            ],
+             ProvisionedThroughput={
+                'ReadCapacityUnits': 5,
+                'WriteCapacityUnits': 5
+            }
+
+        )
+    
+    def createThing(self,data):
+        client = boto3.client('iot')
+        response = client.create_thing(
+            thingName = data["SensorName"] ,
+            thingTypeName = data["SensorType"],
+            attributePayload={
+                'attributes':data['attributes'],
+                'merge':True
+            }
+        )
+
+        if response == None:
+            return False
+        else:
+            a = SensorData(sensor_name = data['SensorName'],sensor_type = data['SensorType'], sensor_attributes = data['attributes'])
+            a.save()
+            return True
+
+    def errorTable(self,data):
+        dynamodb = boto3.client('dynamodb')
+        table2 = dynamodb.create_table(
+            TableName=data['SensorName']+"Error",
+            KeySchema=[
+                {
+                    'AttributeName':'Sensor_name',
+                    'KeyType':'HASH'
+                },
+                {
+                    'AttributeName':'Sensor_type',
+                    'KeyType':'RANGE'
+
+                }
+
+            ],
+            AttributeDefinitions = [
+                {
+                    'AttributeName':'Sensor_name',
+                    'AttributeType':'S'
+                },
+                {
+                    'AttributeName':'Sensor_type',
+                    'AttributeType':'S'
+                }
+            ],
+             ProvisionedThroughput={
+                'ReadCapacityUnits': 5,
+                'WriteCapacityUnits': 5
+            }
+
+        )
+    
+
+    def createRule(self, data):
+        """
+        This Function is used to create rule on AWS IoT core thing,
+        this function applies the rule to the data which is being published
+        args**
+        ruleData:
+            type: Dictionary
+            Contents: Name of rule, Description of rule,Sql statement, Acess Resource, flag for rule
+        """
+        client = boto3.client('iot')
+        data['sql'] = self.computeSql(data)
+        arwAWS = 'arn:aws:iam::605025463444:role/DynamoDBaccess'
+        tableName = data['SensorName']+"Data"
+        print(data)
+        client.create_topic_rule(
+            ruleName = data['RuleName'],
+            topicRulePayload = {
+                'sql':data['sql'],
+                'description':data['RuleDescription'],
+                'actions':[
+                    {
+                        'dynamoDB': {
+                            'tableName': tableName,
+                            'roleArn': arwAWS,
+                            'hashKeyField': 'Sensor_name',
+                            'hashKeyValue': '${SensorName}',
+                            'hashKeyType': 'STRING',
+                            'rangeKeyField': 'Sensor_type',
+                            'rangeKeyValue': '${SensorType}',
+                            'rangeKeyType': 'STRING',
+                            'payloadField': 'payload'
+                        }
+                    }
+                ],
+                'ruleDisabled': False
+            }
+        )
+       
+        rule = ThingRules(rule_name = data['RuleName'], rule_sql = data['sql'],sensor_name = data['SensorName'])
+        rule.save()
+    
+    def computeSql(self, data):
+        tableName = "'"+data['SensorName']+"Data'"
+        condition = data['RuleField']
+        val = str(data['RuleValue'])
+        if data['RuleType'] == 'lb':
+            condition = condition + " < " + val
+        elif data['RuleType'] == 'ub':
+            condition = condition + " > " + val
+        else:
+            condition = condition + " = " + val
+        
+        sql = "select * from "+tableName+" where "+condition
+
+        print(sql)
+        return sql
+
 
 
 
