@@ -1,0 +1,53 @@
+{% extends 'devices/base.html' %} {% load static %}{% block content %}
+<fieldset class="form-group">
+  <legend class="border-bottom mb-4">
+    Test Analysis
+  </legend>
+  <label for="sel_sensor">Select Sensor</label>
+  <select class="form-control" id="sel_sensor">
+
+    {% for sensor in sensors %}
+    <option value="{{sensor.api}}">{{sensor.name}}</option>
+    {% endfor %}
+  </select>
+  <br>
+    <div class="form-row">
+      <div class="col-md-3 mb-3">
+        <label for="from">Start Date</label>
+        <input type="date" class="form-control" id="from" required>
+        <div class="invalid-feedback">
+          Please provide a valid Value.
+        </div>
+      </div>
+      <div class="col-md-3 mb-3">
+        <label for="to">End Date</label>
+        <input type="date" class="form-control" id="to" required>
+        <div class="invalid-feedback">
+          Please provide a valid Value.
+        </div>
+      </div>
+    </div>
+    <button class="btn btn-primary" onclick="displayData()">SHOW RESULTS</button>
+</fieldset>
+{% comment %} the area for adding custom buttons for analysis {% endcomment %}
+  <div id="buttons" class="row">
+  </div>
+  <br>
+  {% comment %} the area where the table of results will be displayed {% endcomment %}
+  <div id="results">
+  </div>
+
+  <div style="height: 200px; overflow-y: scroll;" id="data">
+  <p id="showData"></p>
+   </div>
+   {% comment %} the area for displaying graph {% endcomment %}
+  <div id = "graph">
+  </div>
+ 
+  
+  {% endblock content %}
+
+  {% block menubar %}
+    {% comment %} Header Tags {% endcomment %}
+   <script src="{% static 'devices/analysis.js' %}"></script>
+  {% endblock menubar %}
