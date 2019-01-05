@@ -155,7 +155,10 @@ class API:
             thingName = data["SensorName"] ,
             thingTypeName = data["SensorType"],
             attributePayload={
-                'attributes':data['attributes'],
+                'attributes':{
+                    "SensingType":data["SensingType"],
+                    "model":data["model"]
+                },
                 'merge':True
             }
         )
@@ -163,7 +166,8 @@ class API:
         if response == None:
             return False
         else:
-            a = SensorData(sensor_name = data['SensorName'],sensor_type = data['SensorType'], sensor_attributes = data['attributes'])
+            a = SensorData(sensor_name=data['SensorName'], sensor_type=data['SensorType'], sensor_attributes={"SensingType": data["SensingType"],
+                                                                                                              "model": data["model"]})
             a.save()
             return True
 

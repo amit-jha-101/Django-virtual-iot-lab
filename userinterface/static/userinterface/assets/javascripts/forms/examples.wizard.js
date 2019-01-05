@@ -26,11 +26,26 @@
 		ev.preventDefault();
 		var validated = $('#w4 form').valid();
 		if ( validated ) {
-			console.log($("#thing").serialize());
+			//console.log($("#thing").serializeJSON())
+			//console.log(formToJson($("thing")));
+			var item = {};
+
+			var splittedFormData = $("#thing").serialize().split('&');
+
+			$.each(splittedFormData, function (key, value) {
+
+				var splittedValue = value.split('=');
+					item[splittedValue[0]] = splittedValue[1];
+			});
+
+			console.log(item);
 			$.ajax({
+				cache: false,
 				url: 'http://localhost:8000/api/create_thing/',
 				type: 'POST',
-				data: $("#thing").serialize(),
+				data: JSON.stringify(item),
+				datatype: 'json',
+				contentType:'application/json',
 				success: function (data) {
 					console.log(data)
 					new PNotify({
