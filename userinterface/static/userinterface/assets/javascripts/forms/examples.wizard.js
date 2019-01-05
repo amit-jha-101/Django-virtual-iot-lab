@@ -22,6 +22,11 @@
 		}
 	});
 
+	function setHeader(xhr) {
+
+		xhr.setRequestHeader('Access-Control-Allow-Origin', "*");
+	}
+
 	$w4finish.on('click', function( ev ) {
 		ev.preventDefault();
 		var validated = $('#w4 form').valid();
@@ -40,12 +45,11 @@
 
 			console.log(item);
 			$.ajax({
-				cache: false,
 				url: 'http://localhost:8000/api/create_thing/',
 				type: 'POST',
 				data: JSON.stringify(item),
-				datatype: 'json',
-				contentType:'application/json',
+				datatype: 'jsonp',
+				crossDomain: true,
 				success: function (data) {
 					console.log(data)
 					new PNotify({
