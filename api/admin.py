@@ -4,5 +4,4 @@ from .models import Weather_data,SensorData,ThingRules
 
 admin.site.register(Weather_data)
 admin.site.register(SensorData)
-
 admin.site.register(ThingRules)

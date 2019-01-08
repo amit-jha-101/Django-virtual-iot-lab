@@ -126,6 +126,8 @@ REST_FRAMEWORK = {
     'rest_framework.authentication.SessionAuthentication',
 ),
  'DEFAULT_PARSER_CLASSES': (
+        'rest_framework.parsers.FormParser',
+        'rest_framework.parsers.MultiPartParser',
         'rest_framework.parsers.JSONParser',
     ),
  'FORM_METHOD_OVERRIDE': None,

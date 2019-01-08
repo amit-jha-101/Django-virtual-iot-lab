@@ -22,7 +22,7 @@
 		<link rel="stylesheet" href="{% static 'userinterface/assets/vendor/font-awesome/css/font-awesome.css' %}" />
 		<link rel="stylesheet" href="{% static 'userinterface/assets/vendor/magnific-popup/magnific-popup.css' %}" />
 		<link rel="stylesheet" href="{% static 'userinterface/assets/vendor/bootstrap-datepicker/css/datepicker3.css' %}" />
-
+		<script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
 		<!-- Specific Page Vendor CSS -->
 		<link rel="stylesheet" href="{% static 'userinterface/assets/vendor/jquery-ui/css/ui-lightness/jquery-ui-1.10.4.custom.css' %}" />
 		<link rel="stylesheet" href="{% static 'userinterface/assets/vendor/bootstrap-multiselect/bootstrap-multiselect.css' %}" />
@@ -324,7 +324,7 @@
 
 							<hr class="separator" />
 
-							<div class="sidebar-widget widget-tasks">
+							<!-- <div class="sidebar-widget widget-tasks">
 								<div class="widget-header">
 									<h6>Top Devices</h6>
 									<div class="widget-toggle">+</div>
@@ -336,7 +336,7 @@
 										<li><a href="#">JSOFT Admin</a></li>
 									</ul>
 								</div>
-							</div>
+							</div> -->
 
 							<hr class="separator" />
 
@@ -373,7 +373,54 @@
 								<div class="panel-body">
 									<div class="row">
 										<div class="col-lg-8">
-											<div class="chart-data-selector" id="salesSelectorWrapper">
+												<input type="hidden" id="myVar" name="variable" value="{{ data }}">
+											<div id = "pie-chart" style="height: 300px; width: 100%;">
+
+											</div>
+											<script>
+												
+												
+													window.onload = function() {
+														var json = "{{data}}".replace(/&#39;/g,"\"");
+														console.log(json);
+														var obj =  jQuery.parseJSON(json);
+
+														console.log(obj)
+														
+														//console.log(JSON.parse(x));
+														//console.log("{{data.dataPoints}}");
+
+														var chart = new CanvasJS.Chart("pie-chart", {
+															exportEnabled: true,
+															animationEnabled: true,
+															title:{
+																text: obj['title']															},
+															legend:{
+																cursor: "pointer",
+																itemclick: explodePie
+															},
+															data: [{
+																type: "pie",
+																
+																toolTipContent: "{label}: <strong>{y}</strong>",
+																indexLabel: "{label} - {y}",
+																dataPoints: obj['dataPoints']
+															}]
+														});
+														chart.render();
+														
+														}
+														function explodePie (e) {
+															if(typeof (e.dataSeries.dataPoints[e.dataPointIndex].exploded) === "undefined" || !e.dataSeries.dataPoints[e.dataPointIndex].exploded) {
+																e.dataSeries.dataPoints[e.dataPointIndex].exploded = true;
+															} else {
+																e.dataSeries.dataPoints[e.dataPointIndex].exploded = false;
+															}
+															e.chart.render();
+														
+														}	
+											</script>
+											<!-- <div class="chart-data-selector" id="salesSelectorWrapper">
 												<h2>
 													Requests:
 													<strong>
@@ -386,7 +433,7 @@
 												</h2>
 
 												<div id="salesSelectorItems" class="chart-data-selector-items mt-sm">
-													<!-- Flot: Sales JSOFT Admin -->
+													
 													<div class="chart chart-sm" data-sales-rel="JSOFT Admin" id="flotDashSales1" class="chart-active"></div>
 													<script>
 
@@ -408,7 +455,7 @@
 
 													</script>
 
-													<!-- Flot: Sales JSOFT Drupal -->
+													
 													<div class="chart chart-sm" data-sales-rel="JSOFT Drupal" id="flotDashSales2" class="chart-hidden"></div>
 													<script>
 
@@ -430,7 +477,7 @@
 
 													</script>
 
-													<!-- Flot: Sales JSOFT Wordpress -->
+													
 													<div class="chart chart-sm" data-sales-rel="JSOFT Wordpress" id="flotDashSales3" class="chart-hidden"></div>
 													<script>
 
@@ -453,7 +500,7 @@
 													</script>
 												</div>
 
-											</div>
+											</div> -->
 										</div>
 
 									</div>
@@ -475,8 +522,8 @@
 													<div class="summary">
 														<h4 class="title">No of Things</h4>
 														<div class="info">
-															<strong class="amount">21</strong>
-															<span class="text-primary">(14 Active)</span>
+															<strong class="amount">{{data.count}}</strong>
+															<span class="text-primary"></span>
 														</div>
 													</div>
 													<div class="summary-footer">
@@ -524,7 +571,7 @@
 													<div class="summary">
 														<h4 class="title">Total Device Types</h4>
 														<div class="info">
-															<strong class="amount">8</strong>
+															<strong class="amount">{{data.listSize}}</strong>
 														</div>
 													</div>
 													<div class="summary-footer">
@@ -615,7 +662,7 @@
 
 		<!-- Theme Initialization Files -->
 		<script src="{% static 'userinterface/assets/javascripts/theme.init.js' %}"></script>
-
+		
 
 		<!-- Examples -->
 		<script src="{% static 'userinterface/assets/javascripts/dashboard/examples.dashboard.js' %}"></script>

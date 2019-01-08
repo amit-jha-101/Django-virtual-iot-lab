@@ -6,7 +6,7 @@ from django.views.decorators.csrf import csrf_exempt
 # Create your views here.
 from rest_framework import viewsets, permissions
 from rest_framework.response import Response
-from .functions import API 
+from .functions import API
 from rest_framework.decorators import api_view
 from rest_framework import status
 import json
@@ -70,18 +70,36 @@ def makeTable(request, tableName = None):
 @api_view(['POST'])
 def createSensor(request):
         if request.method == 'POST':
-                print(request.body)
-                data = json.loads(request.body)
+                print(request.data)
+                data = request.data
                 print(data)
                 api = API()
                 api.createTable(data)
                 boolean = api.createThing(data)
-                api.errorTable(data)
                 api.createRule(data)
                 if boolean == True:
                         return Response(status= status.HTTP_201_CREATED)
                 else:
                         return Response(status = status.HTTP_204_NO_CONTENT)
 
+@api_view(['GET'])
+def getThings(request):
+        api = API()
+        data = api.getThings()
+        return Response(data)
 
-                
+@api_view(['GET'])
+def getThingType(request):
+        api = API()
+        data = api.getThingType()
+        newData={}
+        newData['title'] = "Thing type  pie-chart"
+        lis = []
+        for l in data['dataset']:
+                x = {}
+                x['label'] = l['sensor_type']
+                x['y'] = l['total']
+                lis.append(x)
+        newData['dataPoints'] = lis
+        print(newData)
+        return Response(newData)                

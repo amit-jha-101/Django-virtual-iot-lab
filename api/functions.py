@@ -10,6 +10,9 @@ import boto3
 import random
 import string
 import pandas as pd
+from django.db.models import Count
+from django.core import serializers
+
 class API:
 
 #this function by defaults queries a table in dynamoDB and returns data array in json format
@@ -119,14 +122,14 @@ class API:
     def createTable(self, data):
         dynamodb = boto3.client('dynamodb')
         table = dynamodb.create_table(
-            TableName=str(data['SensorName']+"Data"),
+            TableName=str(data['SensorName']),
             KeySchema=[
                 {
-                    'AttributeName':'Sensor_id',
+                    'AttributeName':'Sensor_name',
                     'KeyType':'HASH'
                 },
                 {
-                    'AttributeName':'Sensor_name',
+                    'AttributeName':'timeStamp',
                     'KeyType':'RANGE'
 
                 }
@@ -134,11 +137,11 @@ class API:
             ],
             AttributeDefinitions = [
                 {
-                    'AttributeName':'Sensor_id',
+                    'AttributeName':'Sensor_name',
                     'AttributeType':'N'
                 },
                 {
-                    'AttributeName':'Sensor_name',
+                    'AttributeName':'timeStamp',
                     'AttributeType':'S'
                 }
             ],
@@ -162,47 +165,25 @@ class API:
                 'merge':True
             }
         )
-
+        certificate = client.create_keys_and_certificate(setAsActive=True)
+        print(str(certificate))
         if response == None:
             return False
         else:
-            a = SensorData(sensor_name=data['SensorName'], sensor_type=data['SensorType'], sensor_attributes={"SensingType": data["SensingType"],
-                                                                                                              "model": data["model"]})
+            a = SensorData(sensor_name=data['SensorName'], 
+            sensor_type=data['SensorType'],
+            sensor_attributes=str({"SensingType": data["SensingType"],
+                "model": data["model"]
+            }),
+            certificate_arn = certificate['certificateArn'],
+            certificate_id = certificate['certificateId'],
+            certificate_pem = certificate[ 'certificatePem'],
+            public_key = certificate['keyPair']['PublicKey'],
+            private_key = certificate['keyPair']['PrivateKey']
+            )
             a.save()
             return True
 
-    def errorTable(self,data):
-        dynamodb = boto3.client('dynamodb')
-        table2 = dynamodb.create_table(
-            TableName=data['SensorName']+"Error",
-            KeySchema=[
-                {
-                    'AttributeName':'Sensor_name',
-                    'KeyType':'HASH'
-                },
-                {
-                    'AttributeName':'Sensor_type',
-                    'KeyType':'RANGE'
-
-                }
-
-            ],
-            AttributeDefinitions = [
-                {
-                    'AttributeName':'Sensor_name',
-                    'AttributeType':'S'
-                },
-                {
-                    'AttributeName':'Sensor_type',
-                    'AttributeType':'S'
-                }
-            ],
-             ProvisionedThroughput={
-                'ReadCapacityUnits': 5,
-                'WriteCapacityUnits': 5
-            }
-
-        )
     
 
     def createRule(self, data):
@@ -215,9 +196,7 @@ class API:
             Contents: Name of rule, Description of rule,Sql statement, Acess Resource, flag for rule
         """
         client = boto3.client('iot')
-        data['sql'] = self.computeSql(data)
-        arwAWS = 'arn:aws:iam::605025463444:role/DynamoDBaccess'
-        tableName = data['SensorName']+"Data"
+        data['sql'] = "SELECT * FROM '"+data['SensorName']+"'"
         print(data)
         client.create_topic_rule(
             ruleName = data['RuleName'],
@@ -226,17 +205,9 @@ class API:
                 'description':data['RuleDescription'],
                 'actions':[
                     {
-                        'dynamoDB': {
-                            'tableName': tableName,
-                            'roleArn': arwAWS,
-                            'hashKeyField': 'Sensor_name',
-                            'hashKeyValue': '${SensorName}',
-                            'hashKeyType': 'STRING',
-                            'rangeKeyField': 'Sensor_type',
-                            'rangeKeyValue': '${SensorType}',
-                            'rangeKeyType': 'STRING',
-                            'payloadField': 'payload'
-                        }
+                       'lambda':{
+                           'functionArn':'arn:aws:lambda:us-west-2:605025463444:function:MyLamdaIoT'
+                       } 
                     }
                 ],
                 'ruleDisabled': False
@@ -246,21 +217,31 @@ class API:
         rule = ThingRules(rule_name = data['RuleName'], rule_sql = data['sql'],sensor_name = data['SensorName'])
         rule.save()
     
-    def computeSql(self, data):
-        tableName = "'"+data['SensorName']+"Data'"
-        condition = data['RuleField']
-        val = str(data['RuleValue'])
-        if data['RuleType'] == 'lb':
-            condition = condition + " < " + val
-        elif data['RuleType'] == 'ub':
-            condition = condition + " > " + val
-        else:
-            condition = condition + " = " + val
-        
-        sql = "select * from "+tableName+" where "+condition
+    def getThings(self):
+        """
+            Gets list of things from aws-iot-core
+        """
+        client = boto3.client('iot')
+        response = client.list_things()
+        listed = response['things']
+        data = {}
+        data['count'] = len(listed)
+        data['data'] = listed
+        print(str(data))
+        return data
 
-        print(sql)
-        return sql
+    def getThingType(self):
+        """
+
+        """
+        getCountType =  SensorData.objects.all().values('sensor_type').annotate(total=Count('sensor_type'))
+        print(str(getCountType))
+        #print(json.loads(getCountType))
+        data = {
+            'dataset':list(getCountType)
+        }
+        print(str(data))
+        return data
 
 
 
