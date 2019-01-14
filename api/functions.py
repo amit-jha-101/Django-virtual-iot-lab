@@ -12,7 +12,7 @@ import string
 import pandas as pd
 from django.db.models import Count
 from django.core import serializers
-
+from userinterface.models import CronData
 class API:
 
 #this function by defaults queries a table in dynamoDB and returns data array in json format
@@ -182,6 +182,13 @@ class API:
             private_key = certificate['keyPair']['PrivateKey']
             )
             a.save()
+            cron = CronData(
+                SensorName=data['SensorName'],
+                testTime = data['interval'],
+                testStatus = data['active']
+
+            )
+            cron.save()
             return True
 
     
@@ -227,7 +234,8 @@ class API:
         data = {}
         data['count'] = len(listed)
         data['data'] = listed
-        print(str(data))
+       # data['dataset'] = json.loads(serializers.serialize('json',SensorData.objects.all()))
+       # print(str(data))
         return data
 
     def getThingType(self):

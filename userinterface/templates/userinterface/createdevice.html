@@ -77,7 +77,13 @@
 						<div class="form-group">
 							<label class="col-sm-3 control-label" for="w4-RuleType">Rule Type</label>
 							<div class="col-sm-9">
-								<input type="text" class="form-control" name="RuleType" id="w4-RuleType" required>
+								<select class="form-control" name="RuleType" id="w4-RuleType" required>
+									<option value = "UPPERBOUND">Upper Bound Rule</option>
+									<option value = "LOWERBOUND">Lower Bound Rule</option>
+									<option value = "EQUAL">Equality Check Rule</option>
+									<option value = "AverageUpper">More than Average</option>
+									<option value = "AverageLower">Less than Average</option>
+								</select>
 							</div>
 						</div>
 						<div class="form-group">
@@ -136,14 +142,22 @@
 						<div class="form-group">
 							<label class="col-sm-3 control-label" for="w4-interval">Testing Interval</label>
 							<div class="col-sm-9">
-								<input type="text" class="form-control" name="interval" id="w4-interval" required>
+								
+								<select class="form-control" name="interval" id="w4-interval" required>
+									<option value = "2">2 min</option>
+									<option value = "10">10 min</option>
+									<option value = "12">12 min</option>
+									<option value = "15">15 min</option>
+									<option value = "30">30 min</option>
+								</select>
 							</div>
 						</div>
 						<div class="form-group">
 							<div class="col-sm-3"></div>
 							<div class="col-sm-9">
 								<div class="checkbox-custom">
-									<input type="checkbox" name="active" id="w4-active" required>
+									<label class="col-sm-3 control-label" for="w4-interval">Testing Status</label>
+									<input type="checkbox" name="active" id="w4-active" >
 									<label for="w4-terms">Activate</label>
 								</div>
 							</div>

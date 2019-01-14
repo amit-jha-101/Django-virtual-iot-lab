@@ -70,12 +70,12 @@ def makeTable(request, tableName = None):
 @api_view(['POST'])
 def createSensor(request):
         if request.method == 'POST':
-                print(request.data)
+                #print(request.data)
                 data = request.data
-                print(data)
+                #print(data)
                 api = API()
-                api.createTable(data)
                 boolean = api.createThing(data)
+                api.createTable(data)
                 api.createRule(data)
                 if boolean == True:
                         return Response(status= status.HTTP_201_CREATED)
@@ -95,11 +95,13 @@ def getThingType(request):
         newData={}
         newData['title'] = "Thing type  pie-chart"
         lis = []
+        #newData['datas'] = data
         for l in data['dataset']:
                 x = {}
                 x['label'] = l['sensor_type']
                 x['y'] = l['total']
                 lis.append(x)
+        print(str(lis))
         newData['dataPoints'] = lis
-        print(newData)
+        #print(str(newData))
         return Response(newData)                
