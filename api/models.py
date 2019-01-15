@@ -29,3 +29,15 @@ class ThingRules(models.Model):
     rule_value = models.IntegerField(default = 25)
     def __str__(self):
         return " Rule Name : "+str(self.rule_name)+"  for sensor : "+ str(self.sensor_name)
+
+class Policy(models.Model):
+    sensor_name = models.CharField(max_length = 255)
+    policyName = models.CharField(max_length = 255)
+    policyArn = models.CharField(max_length = 2048)
+    policyDocument = models.TextField(blank=True, null = True)
+    policyVersionId = models.TextField(blank=True, null = True)
+    
+
+    def __str__(self):
+        return " Policy Name : "+self.policyName
+ 
