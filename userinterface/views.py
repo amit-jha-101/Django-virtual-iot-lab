@@ -31,8 +31,9 @@ def viewthings(request):
   data['dataPoints'] = response['dataPoints']
   data['listSize'] = len(response['dataPoints'])
   data['title'] = response['title']
+  print("___________________")
   print(data['ThingData'])
-  return render(request, 'userinterface/viewthings.html', {'data': data})
+  return render(request, 'userinterface/viewthings.html', {'data': data['ThingData']})
   
 
 

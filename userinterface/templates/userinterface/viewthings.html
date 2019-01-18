@@ -14,14 +14,15 @@
 <div class="col-md-6 col-lg-12 col-xl-6">
 							<div class="row">
               {% comment %} start {% endcomment %}
+              {% for k in data %}
 								<div class="col-md-12 col-lg-4 col-xl-4">
                <section class="panel panel-featured panel-featured-info">
 								<header class="panel-heading">
 									
-									<h2 class="panel-title">Thing Name</h2>
+									<h2 class="panel-title">{{ k.thingName}}</h2>
 								</header>
 								<div class="panel-body">
-									<p><b>Type:</b> Temperature Sensor</p>
+									<p><b>Type:</b> {{k.thingTypeName }}</p>
                   <p><b>Date Created:</b> 12 Jan 2019</p>
                   <p><b>Test Interval:</b> 30 min</p>
 								</div>
@@ -30,14 +31,15 @@
 
                  <div class="btn-group" style="float:right" id="status" data-toggle="buttons">
                     <label class="btn btn-default btn-on-1 btn-sm active">
-                    <input type="radio" value="1" name="on" onChange="toggle(this)">Active</label>
+                    <input type="radio" value="1" name="on" onChange="toggle(this,'{{k.thingName}}')">Active</label>
                     <label class="btn btn-default btn-off-1 btn-sm ">
-                    <input type="radio" value="0" name="on" onChange="toggle(this)">Inactive</label>
+                    <input type="radio" value="0" name="on" onChange="toggle(this,'{{k.thingName}}')">Inactive</label>
                     </div>
                 </div>
 							</section>
 
 								</div>
+                {% endfor %}
 								{% comment %} end {% endcomment %}
 							</div>
 						</div>
@@ -57,10 +59,53 @@
 {% block example %}
  
 <script>
-function toggle(togg){
+function getCookie(name) {
+			var cookieValue = null;
+			var i = 0;
+			if (document.cookie && document.cookie !== '') {
+				var cookies = document.cookie.split(';');
+				for (i; i < cookies.length; i++) {
+					var cookie = jQuery.trim(cookies[i]);
+					// Does this cookie string begin with the name we want?
+					if (cookie.substring(0, name.length + 1) === (name + '=')) {
+						cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+						break;
+					}
+				}
+			}
+			return cookieValue;
+		}
+		
+	
+		function csrfSafeMethod(method) {
+			// these HTTP methods do not require CSRF protection
+			return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+		}
+
+
+function toggle(togg,n){
+
+  var csrftoken = getCookie('csrftoken');
+  
+	$.ajaxSetup({
+			crossDomain: false, // obviates need for sameOrigin test
+			beforeSend: function(xhr, settings) {
+				if (!csrfSafeMethod(settings.type)) {
+					xhr.setRequestHeader("X-CSRFToken", csrftoken);
+				}
+			}
+		}); 
   var x=togg.value;
-  console.log(x)
-  alert(x);
+  var y="on";
+  if(x==0)
+  {
+    y="off";
+  }
+  $.ajax({
+    url: "http://localhost:8000/api/toggleTest/?status="+y+"&name="+n,
+    
+    cache: false,
+});
 }
 </script>
 

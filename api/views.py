@@ -108,15 +108,18 @@ def getThingType(request):
         return Response(newData)     
 
 
-@api_view(['POST'])
+@api_view(['GET'])
 def toggleTest(request):
-        if request.method == 'POST':
-                data = request.data
-                if data['status'] == 'on':
-                        dat = CronData.objects.filter(SensorName = data['name'], testStatus = data['status']).first()
-                        dat.status = 'off'
-                        dat.save(update_fields=['status'])
+        if request.method == 'GET':
+                data = request.query_params.get('status')
+                n = request.query_params.get('name')
+                if data == 'on':
+                        dat = CronData.objects.filter(SensorName = n).first()
+                        print(dat)
+                        dat.testStatus = 'on'
+                        dat.save(update_fields=['testStatus'])
                 else:
-                        dat = CronData.objects.filter(SensorName = data['name'], testStatus = data['status']).first()
-                        dat.status = 'on'
-                        dat.save(update_fields=['status'])
+                        dat = CronData.objects.filter(SensorName =n).first()
+                        dat.testStatus = 'off'
+                        dat.save(update_fields=['testStatus'])
+                return Response("DONE")
