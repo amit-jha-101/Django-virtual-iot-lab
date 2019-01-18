@@ -14,3 +14,12 @@
 	"RuleDescription":"Just a temperature sensor"
 	
 }
+
+
+#Sample Data for toggling testing
+
+{
+	"name":"Sensor-name",
+	"status":'on/off',
+	
+}

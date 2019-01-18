@@ -13,6 +13,7 @@ import json
 from decimal import Decimal
 from rest_framework.decorators import parser_classes
 from rest_framework.parsers import JSONParser
+from userinterface.models import CronData
 
 
 @api_view(['POST'])
@@ -104,4 +105,18 @@ def getThingType(request):
         print(str(lis))
         newData['dataPoints'] = lis
         #print(str(newData))
-        return Response(newData)                
+        return Response(newData)     
+
+
+@api_view(['POST'])
+def toggleTest(request):
+        if request.method == 'POST':
+                data = request.data
+                if data['status'] == 'on':
+                        dat = CronData.objects.filter(SensorName = data['name'], testStatus = data['status']).first()
+                        dat.status = 'off'
+                        dat.save(update_fields=['status'])
+                else:
+                        dat = CronData.objects.filter(SensorName = data['name'], testStatus = data['status']).first()
+                        dat.status = 'on'
+                        dat.save(update_fields=['status'])

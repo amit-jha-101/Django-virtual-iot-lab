@@ -2,7 +2,7 @@ import requests
 import json
 from datetime import datetime
 import os
-from .models import SensorData,ThingRules
+from .models import SensorData,ThingRules,Policy
 from django.conf import settings
 from AWSIoTPythonSDK.MQTTLib import AWSIoTMQTTClient
 from boto3.dynamodb.conditions import Key, Attr
@@ -182,6 +182,7 @@ class API:
             private_key = certificate['keyPair']['PrivateKey']
             )
             a.save()
+            self.createPolicy(data["SensorName"],certificate['certificateId'])
             cron = CronData(
                 SensorName=data['SensorName'],
                 testTime = data['interval'],
@@ -250,6 +251,59 @@ class API:
         }
         print(str(data))
         return data
+    
+    def createPolicy(self, sensor_name,arn):
+        """
+
+        """
+        client = boto3.client('iot')
+        document = {
+           
+            "Version": "2012-10-17",
+            "Statement": [
+                {
+                "Effect": "Allow",
+                "Action": "iot:Connect",
+                "Resource": "arn:aws:iot:us-west-2:605025463444:client/"+sensor_name
+                },
+                {
+                "Effect": "Allow",
+                "Action": "iot:Receive",
+                "Resource": "arn:aws:iot:us-west-2:605025463444:topic/"+sensor_name
+                },
+                {
+                "Effect": "Allow",
+                "Action": "iot:Publish",
+                "Resource": "arn:aws:iot:us-west-2:605025463444:topic/"+sensor_name
+                },
+                {
+                "Effect": "Allow",
+                "Action": "iot:Subscribe",
+                "Resource": "arn:aws:iot:us-west-2:605025463444:topicfilter/"+sensor_name
+                }
+            ]
+             
+        }
+        print(str(json.dumps(document)))
+        response = client.create_policy(
+            policyName=sensor_name,
+            policyDocument = str(json.dumps(document))
+
+        )
+        policy = Policy(
+            sensor_name = sensor_name,
+             policyName = response['policyName'],
+             policyArn = response['policyArn'],
+             policyDocument = response['policyDocument'],
+             policyVersionId = response['policyVersionId']
+            )
+        policy.save()
+        # client.attach_policy(
+        #     policyName = sensor_name,
+        #     target = 'arn:aws:iam::605025463444:policy/Iot'
+        # )
+
+
 
 
 

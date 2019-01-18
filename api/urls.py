@@ -8,6 +8,7 @@ urlpatterns = [
     path('makeTable/<slug:tableName>',views.makeTable,name="makeTable"),
     path('create_thing/',views.createSensor, name="createSensor"),
     path('getThings/',views.getThings, name="getSensor"),
-    path('getThingType/',views.getThingType,name = "getThingType")
+    path('getThingType/',views.getThingType,name = "getThingType"),
+    path('toggleTest/',views.toggleTest,name = "Toggle-test")
 
 ]
