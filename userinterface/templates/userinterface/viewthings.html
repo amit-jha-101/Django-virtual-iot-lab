@@ -1,0 +1,67 @@
+{% extends "userinterface/base.html" %}
+{% load static %}
+
+{% block pagecss %}
+  <style>
+
+.btn-default.btn-on-1.active{background-color: #5BB75B;color: white;}
+.btn-default.btn-off-1.active{background-color: #DA4F49;color: white;}
+  </style>
+		<link rel="stylesheet" href="{% static 'userinterface/assets/vendor/pnotify/pnotify.custom.css' %}" />
+{% endblock pagecss %}
+
+{% block page %}
+<div class="col-md-6 col-lg-12 col-xl-6">
+							<div class="row">
+              {% comment %} start {% endcomment %}
+								<div class="col-md-12 col-lg-4 col-xl-4">
+               <section class="panel panel-featured panel-featured-info">
+								<header class="panel-heading">
+									
+									<h2 class="panel-title">Thing Name</h2>
+								</header>
+								<div class="panel-body">
+									<p><b>Type:</b> Temperature Sensor</p>
+                  <p><b>Date Created:</b> 12 Jan 2019</p>
+                  <p><b>Test Interval:</b> 30 min</p>
+								</div>
+                <div class="panel-footer">
+                <button type="button" class="mr-15px btn btn-primary" style="margin-right:5px;">View Tests</button>
+
+                 <div class="btn-group" style="float:right" id="status" data-toggle="buttons">
+                    <label class="btn btn-default btn-on-1 btn-sm active">
+                    <input type="radio" value="1" name="on" onChange="toggle(this)">Active</label>
+                    <label class="btn btn-default btn-off-1 btn-sm ">
+                    <input type="radio" value="0" name="on" onChange="toggle(this)">Inactive</label>
+                    </div>
+                </div>
+							</section>
+
+								</div>
+								{% comment %} end {% endcomment %}
+							</div>
+						</div>
+					</div>
+
+{% endblock page %}
+
+{% block pagevendor %}
+
+	<script src="{% static 'userinterface/assets/vendor/jquery-validation/jquery.validate.js' %}"></script>
+		<script src="{% static 'userinterface/assets/vendor/bootstrap-wizard/jquery.bootstrap.wizard.js' %}"></script>
+		<script src="{% static 'userinterface/assets/vendor/pnotify/pnotify.custom.js' %}"></script>
+   
+
+{% endblock pagevendor %}
+
+{% block example %}
+ 
+<script>
+function toggle(togg){
+  var x=togg.value;
+  console.log(x)
+  alert(x);
+}
+</script>
+
+ {% endblock example%}

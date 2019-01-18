@@ -21,7 +21,7 @@ def testInterval2():
     """
     data = json.loads(serializers.serialize('json',CronData.objects.all().filter(testTime = 2, testStatus = 'on')))
     f = open("demofile.txt", "a")
-    f.write(data)
+    f.write(str(data))
     print(str(data))
     f.close()
     logger.info(str(data))
