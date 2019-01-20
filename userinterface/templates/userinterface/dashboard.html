@@ -381,9 +381,11 @@
 												
 												
 													window.onload = function() {
-														var json = "{{data}}".replace(/&#39;/g,"\"");
-														console.log(json);
-														var obj =  jQuery.parseJSON(json);
+														var json = "{{data}}".replace(/&quot;/g,"\"");
+														var data = json.replace(/&#39;/g,"\"");
+														console.log("hello")
+														console.log(data);
+														var obj =  jQuery.parseJSON(data);
 
 														console.log(obj)
 														
@@ -618,16 +620,9 @@
 											<a href="#" class="card-link">Another link</a>
 										</div>
 									</div>
-<<<<<<< HEAD
-								{% endfor %} {% endcomment %}
-							</div>
-||||||| merged common ancestors
-								{% endfor %}
-							</div>
-=======
 								{% endfor %}
 							</div> {% endcomment %}
->>>>>>> 296e29f75f186351fafd0bba155f4fa17cf78ff7
+
 
 						</div>
 
@@ -642,6 +637,7 @@
 		</section>
 
 		<!-- Vendor -->
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 		<script src="{% static 'userinterface/assets/vendor/jquery/jquery.js' %}"></script>
 		<script src="{% static 'userinterface/assets/vendor/jquery-browser-mobile/jquery.browser.mobile.js' %}"></script>
 		<script src="{% static 'userinterface/assets/vendor/bootstrap/js/bootstrap.js' %}"></script>

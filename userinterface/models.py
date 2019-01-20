@@ -5,6 +5,9 @@ class CronData(models.Model):
     SensorName = models.CharField(max_length = 255, primary_key = True, null = False,default = uuid.uuid4)
     testTime = models.IntegerField()
     testStatus = models.CharField(max_length = 255, default = "off")
+    ruleValue = models.IntegerField(default=0)
+    ruleType = models.CharField(max_length = 255, null = True)
+    ruleName = models.CharField(max_length = 255,null = True)
 
     def __str__(self):
         return "Sensor : "+str(self.SensorName)+"  testTime: "+ str(self.testTime)+" in min"

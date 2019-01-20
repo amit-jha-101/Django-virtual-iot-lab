@@ -98,7 +98,7 @@ class API:
             return None
         else:
             client = boto3.resource('dynamodb')
-            table = client.Table('temp')
+            table = client.Table(tableName)
             response = table.scan()
             items = response["Items"]
             lists = []
@@ -107,10 +107,6 @@ class API:
             self.dataframe =pd.DataFrame.from_dict(lists,orient="columns")
             Json = {}
             Json["Items"] = self.dataframe.to_json(orient='records')
-            Json["Max"] = self.getMaxTemp()
-            Json["Min"] = self.getMinTemp()
-            Json["temperature"] = list(self.dataframe['temperature'])
-            Json["timestamp"] = list(self.dataframe['timestamp'])
             return Json
 
     def getMaxTemp(self):
@@ -125,11 +121,11 @@ class API:
             TableName=str(data['SensorName']),
             KeySchema=[
                 {
-                    'AttributeName':'Sensor_name',
+                    'AttributeName':'SensorName',
                     'KeyType':'HASH'
                 },
                 {
-                    'AttributeName':'timeStamp',
+                    'AttributeName':'TimeStamp',
                     'KeyType':'RANGE'
 
                 }
@@ -137,11 +133,11 @@ class API:
             ],
             AttributeDefinitions = [
                 {
-                    'AttributeName':'Sensor_name',
-                    'AttributeType':'N'
+                    'AttributeName':'SensorName',
+                    'AttributeType':'S'
                 },
                 {
-                    'AttributeName':'timeStamp',
+                    'AttributeName':'TimeStamp',
                     'AttributeType':'S'
                 }
             ],
@@ -179,14 +175,20 @@ class API:
             certificate_id = certificate['certificateId'],
             certificate_pem = certificate[ 'certificatePem'],
             public_key = certificate['keyPair']['PublicKey'],
-            private_key = certificate['keyPair']['PrivateKey']
+            private_key = certificate['keyPair']['PrivateKey'],
+            status = data['active'],
+            timestamp = str(datetime.now()),
+            interval = str(data['interval'])
             )
             a.save()
             self.createPolicy(data["SensorName"],certificate['certificateId'])
             cron = CronData(
                 SensorName=data['SensorName'],
                 testTime = data['interval'],
-                testStatus = data['active']
+                testStatus = data['active'],
+                ruleName = data['RuleName'],
+                ruleType = data['RuleType'],
+                ruleValue = data['RuleValue']
 
             )
             cron.save()
@@ -221,6 +223,18 @@ class API:
                 'ruleDisabled': False
             }
         )
+        resp = client.get_topic_rule(
+            ruleName = data['RuleName']
+        )
+        
+        client = boto3.client('lambda')
+        client.add_permission(
+            FunctionName = "MyLamdaIoT",
+            StatementId = "event"+data['RuleName'],
+            Action = "lambda:InvokeFunction",
+            Principal =  "iot.amazonaws.com",
+            SourceArn = resp['ruleArn']    
+        )
        
         rule = ThingRules(rule_name = data['RuleName'], rule_sql = data['sql'],sensor_name = data['SensorName'])
         rule.save()
@@ -229,15 +243,17 @@ class API:
         """
             Gets list of things from aws-iot-core
         """
-        client = boto3.client('iot')
-        response = client.list_things()
-        listed = response['things']
-        data = {}
-        data['count'] = len(listed)
-        data['data'] = listed
-       # data['dataset'] = json.loads(serializers.serialize('json',SensorData.objects.all()))
-       # print(str(data))
-        return data
+        things = SensorData.objects.all().values('sensor_name','sensor_type','timestamp','status','interval') 
+        # listed = response['things']
+        # data = {}
+        # data['count'] = len(listed)
+        # data['data'] = listed
+        #data['dataset'] = json.loads(serializers.serialize('json',SensorData.objects.all()))
+        #print(str(data))
+        dat = {}
+        dat["count"] = len(things)
+        dat["data"]  = list(things)
+        return dat
 
     def getThingType(self):
         """
@@ -264,22 +280,22 @@ class API:
                 {
                 "Effect": "Allow",
                 "Action": "iot:Connect",
-                "Resource": "arn:aws:iot:us-west-2:605025463444:client/"+sensor_name
+                "Resource": "*"
                 },
                 {
                 "Effect": "Allow",
                 "Action": "iot:Receive",
-                "Resource": "arn:aws:iot:us-west-2:605025463444:topic/"+sensor_name
+                "Resource": "*"
                 },
                 {
                 "Effect": "Allow",
                 "Action": "iot:Publish",
-                "Resource": "arn:aws:iot:us-west-2:605025463444:topic/"+sensor_name
+                "Resource": "*"
                 },
                 {
                 "Effect": "Allow",
                 "Action": "iot:Subscribe",
-                "Resource": "arn:aws:iot:us-west-2:605025463444:topicfilter/"+sensor_name
+                "Resource": "*"
                 }
             ]
              

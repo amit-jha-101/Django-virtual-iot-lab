@@ -19,21 +19,21 @@
                <section class="panel panel-featured panel-featured-info">
 								<header class="panel-heading">
 									
-									<h2 class="panel-title">{{ k.thingName}}</h2>
+									<h2 class="panel-title">{{ k.sensor_name}}</h2>
 								</header>
 								<div class="panel-body">
-									<p><b>Type:</b> {{k.thingTypeName }}</p>
-                  <p><b>Date Created:</b> 12 Jan 2019</p>
-                  <p><b>Test Interval:</b> 30 min</p>
+									<p><b>Type:</b> {{k.sensor_type }}</p>
+                  <p><b>Date Created:</b> {{k.timestamp}}</p>
+                  <p><b>Test Interval:</b>{{k.interval}}</p>
 								</div>
                 <div class="panel-footer">
                 <button type="button" class="mr-15px btn btn-primary" style="margin-right:5px;">View Tests</button>
 
                  <div class="btn-group" style="float:right" id="status" data-toggle="buttons">
                     <label class="btn btn-default btn-on-1 btn-sm active">
-                    <input type="radio" value="1" name="on" onChange="toggle(this,'{{k.thingName}}')">Active</label>
+                    <input type="radio" value="1" name="on" onChange="toggle(this,'{{k.sensor_name}}')">Active</label>
                     <label class="btn btn-default btn-off-1 btn-sm ">
-                    <input type="radio" value="0" name="on" onChange="toggle(this,'{{k.thingName}}')">Inactive</label>
+                    <input type="radio" value="0" name="on" onChange="toggle(this,'{{k.sensor_name}}')">Inactive</label>
                     </div>
                 </div>
 							</section>
