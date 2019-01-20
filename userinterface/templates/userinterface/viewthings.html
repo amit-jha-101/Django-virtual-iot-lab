@@ -102,8 +102,7 @@ function toggle(togg,n){
     y="off";
   }
   $.ajax({
-    url: "http://localhost:8000/api/toggleTest/?status="+y+"&name="+n,
-    
+    url: "http://localhost:8000/api/toggleTest/?status="+y+"&name="+n,   
     cache: false,
 });
 }
