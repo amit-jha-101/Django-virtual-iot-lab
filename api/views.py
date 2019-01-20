@@ -115,11 +115,18 @@ def toggleTest(request):
                 n = request.query_params.get('name')
                 if data == 'on':
                         dat = CronData.objects.filter(SensorName = n).first()
+                        data = SensorData.objects.filter(sensor_name = n).first()
+
                         print(dat)
-                        dat.testStatus = 'on'
-                        dat.save(update_fields=['testStatus'])
-                else:
-                        dat = CronData.objects.filter(SensorName =n).first()
+                        data.status = 'off'
                         dat.testStatus = 'off'
                         dat.save(update_fields=['testStatus'])
+                        data.save(update_fields = ['status'])
+                else:
+                        dat = CronData.objects.filter(SensorName =n).first()
+                        data = SensorData.objects.filter(sensor_name = n).first()
+                        dat.testStatus = 'on'
+                        data.status = 'on'
+                        dat.save(update_fields=['testStatus'])
+                        data.save(update_fields = ['status'])
                 return Response("DONE")

@@ -14,6 +14,9 @@ class SensorData(models.Model):
     certificate_pem = models.TextField(blank = True, null=True)
     public_key = models.TextField(blank = True, null= True)
     private_key = models.TextField(blank=True, null = True)
+    timestamp = models.CharField(blank = True, null = True, max_length = 255)
+    status = models.CharField(blank = True, null = True, max_length = 255)
+    interval = models.CharField(blank = True, null = True, max_length = 255)
     
 
     def __str__(self):

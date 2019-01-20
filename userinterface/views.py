@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponse
 import requests
 import json
+from api.functions import API
 # Create your views here.
 
 
@@ -41,4 +42,11 @@ def viewthings(request):
 #   hello.apply_async(args=[],countdown=3)
 #   return HttpResponse("WOOOWW")
 
+def tableView(request,tableName):
+  obj = API()
+  data = {}
+  print(tableName)
+  data['data'] = obj.getTableData(tableName)
+
+  return render(request, 'userinterface/test.html',{'data':data['data']})
 
