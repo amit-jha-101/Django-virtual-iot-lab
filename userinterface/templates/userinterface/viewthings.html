@@ -27,7 +27,7 @@
                   <p><b>Test Interval:</b>{{k.interval}}</p>
 								</div>
                 <div class="panel-footer">
-                <button type="button" class="mr-15px btn btn-primary" style="margin-right:5px;">View Tests</button>
+                <button type="button" class="mr-15px btn btn-secondary" style="margin-right:5px;"><a href="{% url 'tst' k.sensor_name %}" > View Tests </a></button>
 
                  <div class="btn-group" style="float:right" id="status" data-toggle="buttons">
                     <label class="btn btn-default btn-on-1 btn-sm active">
@@ -109,3 +109,5 @@ function toggle(togg,n){
 </script>
 
  {% endblock example%}
+ 
+ 
