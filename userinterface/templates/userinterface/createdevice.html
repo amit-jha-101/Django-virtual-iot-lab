@@ -1,0 +1,191 @@
+{% extends "userinterface/base.html" %}
+{% load static %}
+
+{% block pagecss %}
+		<link rel="stylesheet" href="{% static 'userinterface/assets/vendor/pnotify/pnotify.custom.css' %}" />
+{% endblock pagecss %}
+
+{% block page %}
+
+	<section class="panel form-wizard" id="w4">
+		<header class="panel-heading">
+			<div class="panel-actions">
+				<a href="#" class="fa fa-caret-down"></a>
+				<a href="#" class="fa fa-times"></a>
+			</div>
+
+			<h2 class="panel-title">New Thing</h2>
+		</header>
+		<div class="panel-body">
+			<div class="wizard-progress wizard-progress-lg">
+				<div class="steps-progress">
+					<div class="progress-indicator"></div>
+				</div>
+				<ul class="wizard-steps">
+					<li class="active">
+						<a href="#w4-account" data-toggle="tab"><span>1</span>Basic Info</a>
+					</li>
+					<li>
+						<a href="#w4-profile" data-toggle="tab"><span>2</span>Attributs</a>
+					</li>
+					<li>
+						<a href="#w4-billing" data-toggle="tab"><span>3</span>Rules</a>
+					</li>
+					<li>
+						<a href="#w4-confirm" data-toggle="tab"><span>4</span>Testing</a>
+					</li>
+				</ul>
+			</div>
+
+			<form class="form-horizontal" novalidate="novalidate" id="thing">
+				<div class="tab-content">
+					<div id="w4-account" class="tab-pane active">
+						<div class="form-group">
+							<label class="col-sm-3 control-label" for="w4-SensorName">SensorName</label>
+							<div class="col-sm-9">
+								<input type="text" class="form-control" name="SensorName" id="w4-SensorName" required>
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-3 control-label" for="w4-SensorType">Sensor Type</label>
+							<div class="col-sm-9">
+								<select class="form-control" name="SensorType">
+								{% for t in types %}
+									<option>{{t.thingTypeName}}</option>
+								{% endfor %}
+								</select>
+							</div>
+						</div>
+					</div>
+					<div id="w4-profile" class="tab-pane">
+						<div class="form-group">
+							<label class="col-sm-3 control-label" for="w4-Env">Enviornment</label>
+							<div class="col-sm-9">
+								<select class="form-control" name="env">
+								<option value="Indoors">Indoors</option>
+									<option value="Outcast">Outcast</option>
+									<option value="Rain">Rain</option>
+									<option value="Sunny">Sunny</option>
+								</select>
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-3 control-label" for="w4-Loc">Location</label>
+							<div class="col-sm-9">
+								<input type="text" class="form-control" name="Loc" id="w4-Loc" required>
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-3 control-label" for="w4-model">model</label>
+							<div class="col-sm-9">
+								<input type="text" class="form-control" name="model" id="w4-model" required>
+							</div>
+						</div>
+					</div>
+					<div id="w4-billing" class="tab-pane">
+						<div class="form-group">
+							<label class="col-sm-3 control-label" for="w4-RuleName">Rule Name</label>
+							<div class="col-sm-9">
+								<input type="text" class="form-control" name="RuleName" id="w4-RuleName">
+							</div>
+						</div>
+							<div class="form-group">
+							<label class="col-sm-3 control-label" for="w4-RuleDescription">Rule Description</label>
+							<div class="col-sm-9">
+								<input type="text" class="form-control" name="RuleDescription" id="w4-RuleDescription">
+							</div>
+						</div>
+
+							<div class="form-group" id="target">
+							<label class="col-sm-3 control-label" for="w4-RuleDescription">Value of the Sensor Should Not be </label>
+							<div class="col-sm-3">
+								<select class="form-control mb-md" name="type">
+									<option value="lt">Less than</option>
+									<option value="gt">Greater than</option>
+									<option value="e">Equal to</option>
+								</select>
+							</div>
+							
+								<div class="col-sm-4">
+								<input type="text" class="form-control" name="value" id="w4-value" placeholder="Mathematical expression here" value=0>
+								<small>AVG - Average of all values | SUM - Sum of all values</small>
+							</div>
+
+							<span class="input-group-btn col-sm-2">
+									<button class="btn btn-success btn-add" type="button" onClick="add()">
+											<span class="glyphicon glyphicon-plus"></span>
+									</button>
+							</span>
+
+							
+						</div>
+
+						</div>
+					<div id="w4-confirm" class="tab-pane">
+						
+						<div class="form-group">
+							<div class="col-sm-3"></div>
+							<div class="col-sm-9">
+								<div class="checkbox-custom">
+									<input type="checkbox" name="active" class = "dope" id="w4-active" onchange = "valueChanged()">
+									<label for="w4-terms">Activate Sensor on Creation</label>
+								</div>
+							</div>
+						</div>
+						<div class = "getInterval" style="display:none;">
+						<div class="form-group">
+							<label class="col-sm-3 control-label" for="w4-interval">Testing Interval</label>
+						
+							<div class="col-sm-9">
+							<select class="form-control" name="interval">
+									<option value=5>5 mins</option>
+									<option value=10>10 mins</option>
+									<option value=20>20 mins</option>
+									<option value=30>30 mins</option>
+									<option value=60>60 mins</option>
+								</select>
+							</div>
+						</div>
+						</div>
+					</div>
+				</div>
+			</form>
+		</div>
+		<div class="panel-footer">
+			<ul class="pager">
+				<li class="previous disabled">
+					<a><i class="fa fa-angle-left"></i> Previous</a>
+				</li>
+				<li class="finish hidden pull-right">
+					<a>Finish</a>
+				</li>
+				<li class="next">
+					<a>Next <i class="fa fa-angle-right"></i></a>
+				</li>
+			</ul>
+		</div>
+	</section>
+				
+
+{% endblock page %}
+
+{% block pagevendor %}
+	<script type = "text/javascript">
+		function valueChanged(){
+			if($('.dope').is(":checked"))
+				$(".getInterval").show();
+			else
+				$(".getInterval").hide(); 
+		}
+	</script>
+	<script src="{% static 'userinterface/assets/vendor/jquery-validation/jquery.validate.js' %}"></script>
+		<script src="{% static 'userinterface/assets/vendor/bootstrap-wizard/jquery.bootstrap.wizard.js' %}"></script>
+		<script src="{% static 'userinterface/assets/vendor/pnotify/pnotify.custom.js' %}"></script>
+   
+
+{% endblock pagevendor %}
+
+{% block example %}
+ <script src="{% static 'userinterface/assets/javascripts/forms/test.js' %}"></script>
+
+ {% endblock example%}

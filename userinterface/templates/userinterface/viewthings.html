@@ -1,0 +1,141 @@
+{% extends "userinterface/base.html" %}
+{% load static %}
+
+{% block pagecss %}
+<style>
+
+	.btn-default.btn-on-1.active{background-color: #5BB75B;color: white;}
+.btn-default.btn-off-1.active{background-color: #DA4F49;color: white;}
+  </style>
+<link rel="stylesheet" href="{% static 'userinterface/assets/vendor/pnotify/pnotify.custom.css' %}" />
+{% endblock pagecss %}
+
+{% block page %}
+<div class="col-md-6 col-lg-12 col-xl-6">
+	<div class="row" id = "dope">
+		{% comment %} start {% endcomment %}
+		{% comment %} {% for k in data.data1 %}
+		<div class="col-md-12 col-lg-4 col-xl-4">
+			<section class="panel panel-featured panel-featured-info">
+				<header class="panel-heading">
+
+					<h2 class="panel-title">{{ k.thingName}}</h2>
+				</header>
+				<div class="panel-body">
+					<p><b>Type:</b> {{k.thingTypeName }}</p>
+					<p><b>Date Created:</b> {{k.attributes.Model}}</p>
+					<p><b>Test Interval:</b>{{data.data2.0}}</p>
+				</div>
+				<div class="panel-footer">
+					<button type="button" class="mr-15px btn btn-secondary" style="margin-right:5px;"><a href="{% url 'test' k.thingName %}">
+							View Tests </a></button>
+
+					<div class="btn-group" style="float:right" id="status" data-toggle="buttons">
+
+						<label class="btn btn-default btn-on-1 btn-sm active">
+							<input type="radio" value="1" name="on" onChange="toggle(this,'{{k.thingName}}')">Active</label>
+						<label class="btn btn-default btn-off-1 btn-sm ">
+							<input type="radio" value="0" name="on" onChange="toggle(this,'{{k.thingName}}')">Inactive</label>
+					</div>
+				</div>
+			</section>
+
+		</div>
+		{% endfor %} {% endcomment %}
+		{% comment %} end {% endcomment %}
+		<script type="text/javascript">
+			var json = "{{data}}".replace(/&quot;/g,"\"");
+			var data = json.replace(/&#39;/g,"\"");
+			//console.log(data);
+			var obj =  jQuery.parseJSON(data);
+			var val = [];
+			var t = [];
+			//console.log(obj);
+			var thingArray = obj['data1'];
+			var activeStatus = obj['data2'];
+			for(i=0;i<activeStatus.length;i++){
+				if(activeStatus[i]=="off"){
+					val.push(0);
+					var d = ['','active'];
+					t.push(d);
+				}else{
+					val.push(1);
+					var d = ['active',''];
+					t.push(d);
+				}
+			}
+			for(i=0;i<thingArray.length;i++){
+
+				var x = "<div class = \"col-md-12 col-lg-4 col-xl-4\"><section class=\"panel panel-featured panel-featured-info\"> <header class=\"panel-heading\"> <h2 class=\"panel-title\">"+thingArray[i].thingName+"</h2> </header> <div class=\"panel-body\"> <p><b>Type:</b>"+ thingArray[i].thingTypeName+"</p> <p><b>Model:  </b>"+ thingArray[i].attributes.Model+"</p> </div> <div class=\"panel-footer\"> <a href=\"http://localhost:8000/ctest/"+thingArray[i].thingName+"\"><button type=\"button\" class=\"mr-15px btn btn-secondary\" style=\"margin-right:5px;\"> 	View Tests </button> </a> <div class=\"btn-group\" style=\"float:right\" id=\"status\" data-toggle=\"buttons\"> <label class=\"btn btn-default btn-on-1 btn-sm "+t[i][0] +"\"> 	<input type=\"radio\" value=\""+val[i]+"\" name=\"on\" onChange=\"toggle(this,\'"+thingArray[i].thingName+"\')\">Active</label> 	<label class=\"btn btn-default btn-off-1 btn-sm "+t[i][1] +" \"> 	<input type=\"radio\" value=\""+val[i]+"\" name=\"on\" onChange=\"toggle(this,\'"+thingArray[i].thingName+"\')\">Inactive</label> </div></div></section></div>";
+				$("#dope").append(x);
+			}
+
+		</script>
+
+	</div>
+</div>
+</div>
+
+{% endblock page %}
+
+{% block pagevendor %}
+
+<script src="{% static 'userinterface/assets/vendor/jquery-validation/jquery.validate.js' %}"></script>
+<script src="{% static 'userinterface/assets/vendor/bootstrap-wizard/jquery.bootstrap.wizard.js' %}"></script>
+<script src="{% static 'userinterface/assets/vendor/pnotify/pnotify.custom.js' %}"></script>
+
+
+{% endblock pagevendor %}
+
+{% block example %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script>
+	function getCookie(name) {
+		var cookieValue = null;
+		var i = 0;
+		if (document.cookie && document.cookie !== '') {
+			var cookies = document.cookie.split(';');
+			for (i; i < cookies.length; i++) {
+				var cookie = jQuery.trim(cookies[i]);
+				// Does this cookie string begin with the name we want?
+				if (cookie.substring(0, name.length + 1) === (name + '=')) {
+					cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+					break;
+				}
+			}
+		}
+		return cookieValue;
+	}
+
+
+	function csrfSafeMethod(method) {
+		// these HTTP methods do not require CSRF protection
+		return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+	}
+
+
+	function toggle(togg, n) {
+
+		var csrftoken = getCookie('csrftoken');
+
+		$.ajaxSetup({
+			crossDomain: false, // obviates need for sameOrigin test
+			beforeSend: function (xhr, settings) {
+				if (!csrfSafeMethod(settings.type)) {
+					xhr.setRequestHeader("X-CSRFToken", csrftoken);
+				}
+			}
+		});
+		var x = togg.value;
+		var y = "on";
+		if (x == 0) {
+			y = "off";
+		}
+		$.ajax({
+			url: "http://localhost:8000/api/toggleTest/?status=" + y + "&name=" + n,
+			cache: false,
+		});
+	}
+</script>
+
+{% endblock example%}
