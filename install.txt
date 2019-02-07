@@ -1,6 +1,0 @@
-AWSIoTPythonSDK
-boto3
-requests
-django
-djangorestframework
-django-crispy-forms
