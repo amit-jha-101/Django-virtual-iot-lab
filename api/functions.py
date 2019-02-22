@@ -24,10 +24,10 @@ class API:
         
         dope['timestamp'] = str(datetime.now())
         dope['thingArn'] = response['thingArn']
-        print(str(dope))
+        #print(str(dope))
         print("in create Thing")
-        print(response["thingArn"])
-        print("out from thing")
+        #print(response["thingArn"])
+        #print("out from thing")
         return response["thingArn"]
 
     def createPolicy(self,name,arn):

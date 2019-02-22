@@ -1,6 +1,6 @@
 {% extends "userinterface/base.html" %}
 {% load static %}
-
+{% load index %}
 {% block pagecss %}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
 
@@ -73,11 +73,13 @@
 												</thead>
 												<tbody>
 													
+													{% for a in r %}
 													<tr>
-														<td>1</td>
-														<td>{{ data.0.type }}</td>
-														<td>{{ data.0.event_val }}</td>
+														<td>{{forloop.counter}}</td>
+														<td>{{ a }}</td>
+														<td>{{ v|index:forloop.counter0 }}</td>
 													</tr>
+												{% endfor %}
 													
 												</tbody>
 											</table>

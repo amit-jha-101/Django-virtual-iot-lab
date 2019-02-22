@@ -43,7 +43,7 @@ def makeTable(request, tableName = None):
 def createSensor(request):
         if request.method == 'POST':
             try:
-                print(request.data)
+                #print(request.data)
                 data = request.data
                 api = API()
                 print("create Sensor")
@@ -52,7 +52,7 @@ def createSensor(request):
                     pass
                 else:
                     data['active'] = 'off'
-                print(str(data))
+                #print(str(data))
                 #Get the rules Defined if any
 
                 rules=dict()
@@ -63,15 +63,15 @@ def createSensor(request):
                     rules[data["type"]]=data["value"]
                     no_of_rules+=1
                     rule_types+=data["type"]
-                    rule_values+=data["values"]
+                    rule_values+=str(data["value"])
                     rules[data["type1"]]=data["value1"]
                     no_of_rules+=1
-                    rule_types+='$'+data["type1"]
-                    rule_values+='$',data["values1"]
+                    rule_types+='#'+data["type1"]
+                    rule_values+='#'+str(data["value1"])
                     rules[data["type2"]]=data["value2"]
                     no_of_rules+=1
-                    rule_types+='$'+data["type2"]
-                    rule_values+='$'+data["values2"]
+                    rule_types+='#'+data["type2"]
+                    rule_values+='#'+str(data["value2"])
                 except:
                     pass
 

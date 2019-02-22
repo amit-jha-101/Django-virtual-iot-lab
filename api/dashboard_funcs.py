@@ -43,7 +43,9 @@ class Dashboard:
         else:
             client = boto3.resource('dynamodb')
             table = client.Table(tableName)
+            print("15Feb"+tableName)
             response = table.scan()
+            print(response)
             items = response["Items"]
             print(items)
             lists = []

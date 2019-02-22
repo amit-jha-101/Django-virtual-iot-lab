@@ -7,12 +7,9 @@
 		<meta charset="UTF-8">
 
 		<title>Virtual IoT Lab</title>
-		<meta name="keywords" content="HTML5 Admin Template" />
-		<meta name="description" content="JSOFT Admin - Responsive HTML5 Template">
-		<meta name="author" content="JSOFT.net">
+		
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-		<!-- Mobile Metas -->
-		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+		
 
 		<!-- Web Fonts  -->
 		<link href="http://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700,800|Shadows+Into+Light" rel="stylesheet" type="text/css">
@@ -268,7 +265,7 @@
 				<aside id="sidebar-left" class="sidebar-left">
 
 					<div class="sidebar-header">
-						<div class="sidebar-title">
+						<div class="sidebar-title" style="color:white">
 							Navigation
 						</div>
 						<div class="sidebar-toggle hidden-xs" data-toggle-class="sidebar-left-collapsed" data-target="html" data-fire-event="sidebar-left-toggle">
@@ -281,7 +278,7 @@
 							<nav id="menu" class="nav-main" role="navigation">
 								<ul class="nav nav-main">
 									<li class="nav-active">
-										<a href="index.html">
+										<a href={% url 'dashboard' %}>
 											<i class="fa fa-home" aria-hidden="true"></i>
 											<span>Dashboard</span>
 										</a>
@@ -294,17 +291,17 @@
                   </a>
                   <ul class="nav nav-children">
                     <li>
-                      <a href="new-device.html">
+                      <a href={% url 'create' %}>
                          Create New
                       </a>
                     </li>
                     <li>
-                      <a href="tables-advanced.html">
+                      <a href="{% url 'viewthings' %}">
                          My devices
                       </a>
                     </li>
                     <li>
-                      <a href="tables-responsive.html">
+                      <a href="{% url 'test' 'Cherry' %}">
                          Test Configurations
                       </a>
                     </li>
@@ -324,14 +321,14 @@
 
 							<div class="sidebar-widget widget-tasks">
 								<div class="widget-header">
-									<h6>Top Devices</h6>
+									<h6 style="color:white">Top Devices</h6>
 									<div class="widget-toggle">+</div>
 								</div>
 								<div class="widget-content">
 									<ul class="list-unstyled m-none">
-										<li><a href="#">JSOFT HTML5 Template</a></li>
-										<li><a href="#">Tucson Template</a></li>
-										<li><a href="#">JSOFT Admin</a></li>
+										<li><a href="http://localhost:8000/ctest/Malcolm">Malcolm</a></li>
+										<li><a href="http://localhost:8000/ctest/Cherry">Cherry</a></li>
+										<li><a href="http://localhost:8000/ctest/Tiger">Tiger</a></li>
 									</ul>
 								</div>
 							</div>
@@ -348,7 +345,7 @@
 
 				<section role="main" class="content-body">
 					<header class="page-header">
-						<h2>Dashboard</h2>
+						<h2>{{Heading}}</h2>
 
 						<div class="right-wrapper pull-right">
 							<ol class="breadcrumbs">
@@ -357,7 +354,7 @@
 										<i class="fa fa-home"></i>
 									</a>
 								</li>
-								<li><span style="padding:15px;">Dashboard</span></li>
+								<li><span style="padding:15px;">{{Heading}}</span></li>
 							</ol>
 
 

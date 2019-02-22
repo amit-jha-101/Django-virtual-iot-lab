@@ -35,6 +35,7 @@ def testInterval2():
 
 
 def dataPush(data):
+    print("EXECUTING FN !!!")
     client = boto3.client('iot-data')
     x = time.time()
     payload = json.dumps({
